@@ -1,0 +1,3 @@
+---
+# Defaults for Plex HAMA setup
+plex_base_dir: "/var/lib/plexmediaserver/Library/Application Support/Plex Media Server"

@@ -1,0 +1,7 @@
+---
+- name: Configure Plex with Shoko Relay
+  hosts: all
+  become: true
+  roles:
+    - role: setup-plex-shoko
+

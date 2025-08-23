@@ -1,0 +1,147 @@
+networks:
+  firefox:
+    driver: bridge
+  mediarr:
+    driver: bridge
+  transmission:
+    driver: bridge
+
+volumes:
+  media:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${MEDIA_DRIVE}
+  completed:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${MEDIA_DRIVE}/completed
+  animes:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${MEDIA_DRIVE}/Animes
+  movies:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${MEDIA_DRIVE}/Movies
+
+services:
+  jellyfin:
+    image: jellyfin/jellyfin
+    user: 1000:1000
+    environment:
+      - JELLYFIN_CACHE_DIR=/var/cache/jellyfin
+      - JELLYFIN_CONFIG_DIR=/etc/jellyfin
+      - JELLYFIN_DATA_DIR=/var/lib/jellyfin
+      - JELLYFIN_LOG_DIR=/var/log/jellyfin
+    volumes:
+      - /docker/jellyfin/etc:/etc/jellyfin
+      - /docker/jellyfin/var-cache:/var/cache/jellyfin
+      - /docker/jellyfin/var-lib:/var/lib/jellyfin
+      - /docker/jellyfin/var-log:/var/log/jellyfin
+      - /docker/jellyfin/timezone:/etc/timezone
+      - media:/mnt/media
+    group_add:
+      - "100"
+    devices:
+      - /dev/dri/renderD128:/dev/dri/renderD128
+    restart: unless-stopped
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    user: 1000:1000
+    networks:
+      - mediarr
+    volumes:
+      - /docker/bazarr:/config
+      - media:/mnt/media
+    ports:
+      - 6767:6767
+    restart: unless-stopped
+    depends_on:
+      - sonarr
+      - radarr
+  jellyseerr:
+    image: fallenbagel/jellyseerr:latest
+    user: 1000:1000
+    networks:
+      - mediarr
+    ports:
+      - 5055:5055
+    volumes:
+      - /docker/jellyseerr:/app/config
+    restart: unless-stopped
+    depends_on:
+      - sonarr
+      - radarr
+  prowlarr:
+    image: linuxserver/prowlarr:latest
+    user: 1000:1000
+    networks:
+      - mediarr
+    volumes:
+      - /docker/prowlarr:/config
+    ports:
+      - 9696:9696
+    restart: unless-stopped
+    depends_on:
+      - flaresolverr
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    networks:
+      - mediarr
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - LOG_HTML=${LOG_HTML:-false}
+      - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
+    restart: unless-stopped
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    user: 1000:1000
+    networks:
+      - mediarr
+      - transmission
+    volumes:
+      - /docker/radarr:/config
+      - media:/mnt/media
+      - completed:/mnt/downloads
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+    depends_on:
+      - prowlarr
+      - jellyfin
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    user: 1000:1000
+    networks:
+      - mediarr
+      - transmission
+    volumes:
+      - /docker/sonarr:/config
+      - media:/mnt/media
+      - completed:/mnt/downloads
+    depends_on:
+      - prowlarr
+      - jellyfin
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+  shoko:
+    image: ghcr.io/shokoanime/server:latest
+    shm_size: 256m
+    networks:
+      - mediarr
+    volumes:
+      - /docker/shoko:/home/shoko/.shoko
+      - animes:/mnt/anime
+      - media:/mnt/import
+    ports:
+      - 8111:8111
+    restart: unless-stopped

@@ -1,0 +1,70 @@
+---
+- name: Ensure Plex base directories exist
+  become: true
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: plex
+    group: plex
+    mode: "0775"
+  loop:
+    - "{{ plex_base_dir }}/Plug-ins"
+    - "{{ plex_base_dir }}/Scanners"
+
+- name: Stop Plex when installing Shoko Relay
+  become: true
+  service:
+    name: "{{ plex_service_name }}"
+    state: stopped
+
+- name: Download and extract ShokoRelay.bundle
+  become: true
+  unarchive:
+    src: "https://github.com/natyusha/ShokoRelay.bundle/releases/latest/download/ShokoRelay.bundle.tar.gz"
+    dest: "{{ plex_base_dir }}/Plug-ins"
+    remote_src: true
+    creates: "{{ plex_base_dir }}/Plug-ins/ShokoRelay.bundle"
+    owner: plex
+    group: plex
+    mode: "u=rwX,g=rwX,o=rX"
+
+- name: Copy Shoko Relay Scanners to Plex base
+  become: true
+  copy:
+    src: "{{ plex_base_dir }}/Plug-ins/ShokoRelay.bundle/Contents/Scanners"
+    dest: "{{ plex_base_dir }}"
+    remote_src: true
+    owner: plex
+    group: plex
+    mode: "u=rwX,g=rwX,o=rX"
+
+- name: Ensure Series scanners directory exists
+  become: true
+  file:
+    path: "{{ plex_base_dir }}/Scanners/Series"
+    state: directory
+    owner: plex
+    group: plex
+    mode: "0775"
+
+- name: Create Shoko Relay Scanner.cfg with preferences
+  become: true
+  copy:
+    dest: "{{ plex_base_dir }}/Scanners/Series/Shoko Relay Scanner.cfg"
+    owner: plex
+    group: plex
+    mode: "0644"
+    content: |
+      [Prefs]
+      Hostname={{ shoko_host }}
+      Port={{ shoko_port }}
+      Username={{ shoko_username }}
+      Password={{ shoko_password }}
+      SingleSeasonOrdering={{ single_season_ordering | ternary('True','False') }}
+
+- name: Start Plex after configuring Shoko Relay
+  become: true
+  service:
+    name: "{{ plex_service_name }}"
+    state: started
+

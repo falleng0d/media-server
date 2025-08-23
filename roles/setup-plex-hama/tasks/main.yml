@@ -1,0 +1,114 @@
+---
+- name: Check if Plex Hama bundle is installed
+  stat:
+    path: "{{ plex_base_dir }}/Plug-ins/Hama.bundle"
+  register: hama_bundle
+
+- name: Stop Plex Media Server if Hama not installed
+  become: true
+  service:
+    name: plexmediaserver
+    state: stopped
+  when: not hama_bundle.stat.exists
+
+- name: Ensure Plug-ins directory exists
+  become: true
+  file:
+    path: "{{ plex_base_dir }}/Plug-ins"
+    state: directory
+    owner: plex
+    group: plex
+    mode: "0775"
+  when: not hama_bundle.stat.exists
+
+- name: Install Hama.bundle
+  become: true
+  git:
+    repo: "https://github.com/ZeroQI/Hama.bundle.git"
+    dest: "{{ plex_base_dir }}/Plug-ins/Hama.bundle"
+    update: no
+  when: not hama_bundle.stat.exists
+
+- name: Set ownership and permissions on Hama.bundle
+  become: true
+  file:
+    path: "{{ plex_base_dir }}/Plug-ins/Hama.bundle"
+    owner: plex
+    group: plex
+    mode: "0775"
+    recurse: true
+  when: not hama_bundle.stat.exists
+
+- name: Ensure Plex Scanners Series directory exists
+  become: true
+  file:
+    path: "{{ plex_base_dir }}/Scanners/Series"
+    state: directory
+    owner: plex
+    group: plex
+    mode: "0775"
+  when: not hama_bundle.stat.exists
+
+- name: Download Absolute Series Scanner
+  become: true
+  get_url:
+    url: "https://raw.githubusercontent.com/ZeroQI/Absolute-Series-Scanner/master/Scanners/Series/Absolute%20Series%20Scanner.py"
+    dest: "{{ plex_base_dir }}/Scanners/Series/Absolute Series Scanner.py"
+    owner: plex
+    group: plex
+    mode: "0775"
+  when: not hama_bundle.stat.exists
+
+- name: Set ownership and permissions on Plex Scanners
+  become: true
+  file:
+    path: "{{ plex_base_dir }}/Scanners"
+    owner: plex
+    group: plex
+    mode: "0775"
+    recurse: true
+  when: not hama_bundle.stat.exists
+
+- name: Ensure Hama agent data directories exist
+  become: true
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: plex
+    group: plex
+    mode: "0775"
+  loop:
+    - "{{ plex_base_dir }}/Plug-in Support/Data/com.plexapp.agents.hama"
+    - "{{ plex_base_dir }}/Plug-in Support/Data/com.plexapp.agents.hama/DataItems/AniDB"
+    - "{{ plex_base_dir }}/Plug-in Support/Data/com.plexapp.agents.hama/DataItems/Plex"
+    - "{{ plex_base_dir }}/Plug-in Support/Data/com.plexapp.agents.hama/DataItems/OMDB"
+    - "{{ plex_base_dir }}/Plug-in Support/Data/com.plexapp.agents.hama/DataItems/TMDB"
+    - "{{ plex_base_dir }}/Plug-in Support/Data/com.plexapp.agents.hama/DataItems/TVDB/blank"
+    - "{{ plex_base_dir }}/Plug-in Support/Data/com.plexapp.agents.hama/DataItems/TVDB/_cache/fanart/original"
+    - "{{ plex_base_dir }}/Plug-in Support/Data/com.plexapp.agents.hama/DataItems/TVDB/episodes"
+    - "{{ plex_base_dir }}/Plug-in Support/Data/com.plexapp.agents.hama/DataItems/TVDB/fanart/original"
+    - "{{ plex_base_dir }}/Plug-in Support/Data/com.plexapp.agents.hama/DataItems/TVDB/fanart/vignette"
+    - "{{ plex_base_dir }}/Plug-in Support/Data/com.plexapp.agents.hama/DataItems/TVDB/graphical"
+    - "{{ plex_base_dir }}/Plug-in Support/Data/com.plexapp.agents.hama/DataItems/TVDB/posters"
+    - "{{ plex_base_dir }}/Plug-in Support/Data/com.plexapp.agents.hama/DataItems/TVDB/seasons"
+    - "{{ plex_base_dir }}/Plug-in Support/Data/com.plexapp.agents.hama/DataItems/TVDB/seasonswide"
+    - "{{ plex_base_dir }}/Plug-in Support/Data/com.plexapp.agents.hama/DataItems/TVDB/text"
+    - "{{ plex_base_dir }}/Plug-in Support/Data/com.plexapp.agents.hama/DataItems/FanartTV"
+  when: not hama_bundle.stat.exists
+
+- name: Set ownership and permissions on Hama data directory
+  become: true
+  file:
+    path: "{{ plex_base_dir }}/Plug-in Support/Data/com.plexapp.agents.hama"
+    owner: plex
+    group: plex
+    mode: "0775"
+    recurse: true
+  when: not hama_bundle.stat.exists
+
+- name: Start Plex Media Server
+  become: true
+  service:
+    name: plexmediaserver
+    state: started
+  when: not hama_bundle.stat.exists

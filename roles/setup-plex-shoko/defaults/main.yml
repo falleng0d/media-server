@@ -1,0 +1,14 @@
+---
+# Defaults for Shoko Relay setup
+plex_base_dir: "/var/lib/plexmediaserver/Library/Application Support/Plex Media Server"
+plex_service_name: "plexmediaserver"
+
+# Shoko connection settings
+shoko_host: "127.0.0.1"
+shoko_port: 8111
+shoko_username: "Default"
+shoko_password: ""
+
+# Scanner behavior
+single_season_ordering: false
+
