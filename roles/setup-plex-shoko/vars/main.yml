@@ -1,0 +1,15 @@
+---
+# Override variables for Shoko configuration
+# These values will override the defaults in defaults/main.yml
+
+# Shoko authentication credentials
+# Update these values according to your Shoko server setup
+# shoko_username: "your_shoko_username"
+# shoko_password: "your_shoko_password"
+
+# Uncomment and modify any other settings you want to override:
+# shoko_host: "192.168.1.100"  # If Shoko is on a different host
+# shoko_port: 8111
+# single_season_ordering: true
+# include_specials: false
+# include_other: false

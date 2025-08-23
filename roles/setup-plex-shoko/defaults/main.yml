@@ -4,11 +4,19 @@ plex_base_dir: "/var/lib/plexmediaserver/Library/Application Support/Plex Media 
 plex_service_name: "plexmediaserver"
 
 # Shoko connection settings
+# Since Shoko runs in Docker container but Plex runs on host,
+# we connect to the container via the exposed port on localhost
 shoko_host: "127.0.0.1"
 shoko_port: 8111
 shoko_username: "Default"
 shoko_password: ""
 
-# Scanner behavior
+# Scanner behavior settings
+# Set to true to put all episodes in Season 1 instead of separate seasons
 single_season_ordering: false
+
+# Additional Shoko Relay scanner options
+# These can be overridden in your playbook variables if needed
+include_specials: true
+include_other: true
 

@@ -1,4 +1,9 @@
 ---
+# Ansible playbook to configure Plex Media Server with Shoko Relay
+# This assumes:
+# - Plex Media Server is running directly on the host (not in Docker)
+# - Shoko Server is running in a Docker container with port 8111 exposed to host
+# - The setup follows the Shoko documentation: https://docs.shokoanime.com/plex/installing-agents-scanners
 - name: Ensure Plex base directories exist
   become: true
   file:
@@ -47,6 +52,21 @@
     group: plex
     mode: "0775"
 
+- name: Wait for Shoko server to be accessible
+  uri:
+    url: "http://{{ shoko_host }}:{{ shoko_port }}/api/init/status"
+    method: GET
+    status_code: [200, 401, 403]
+  register: shoko_status
+  until: shoko_status.status in [200, 401, 403]
+  retries: 30
+  delay: 10
+  ignore_errors: true
+
+- name: Display Shoko server status
+  debug:
+    msg: "Shoko server is {{ 'accessible' if shoko_status.status in [200, 401, 403] else 'not accessible' }} at {{ shoko_host }}:{{ shoko_port }}"
+
 - name: Create Shoko Relay Scanner.cfg with preferences
   become: true
   copy:
@@ -61,10 +81,11 @@
       Username={{ shoko_username }}
       Password={{ shoko_password }}
       SingleSeasonOrdering={{ single_season_ordering | ternary('True','False') }}
+      IncludeSpecials={{ include_specials | ternary('True','False') }}
+      IncludeOther={{ include_other | ternary('True','False') }}
 
 - name: Start Plex after configuring Shoko Relay
   become: true
   service:
     name: "{{ plex_service_name }}"
     state: started
-
