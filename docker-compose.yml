@@ -91,9 +91,6 @@ services:
     networks:
       - mediarr
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Etc/UTC
       - AUTO_UPDATE=true
       - RUN_OPTS=
     volumes:
@@ -102,8 +99,6 @@ services:
     ports:
       - 9117:9117
     restart: unless-stopped
-    depends_on:
-      - flaresolverr
   flaresolverr:
     image: ghcr.io/flaresolverr/flaresolverr:latest
     networks:
