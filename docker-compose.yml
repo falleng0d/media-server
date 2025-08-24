@@ -4,7 +4,8 @@ networks:
   mediarr:
     driver: bridge
   transmission:
-    driver: bridge
+    name: transmission
+    external: true
 
 volumes:
   media:
@@ -35,7 +36,6 @@ volumes:
 services:
   jellyfin:
     image: jellyfin/jellyfin
-    user: 1000:1000
     environment:
       - JELLYFIN_CACHE_DIR=/var/cache/jellyfin
       - JELLYFIN_CONFIG_DIR=/etc/jellyfin
@@ -46,16 +46,12 @@ services:
       - /docker/jellyfin/var-cache:/var/cache/jellyfin
       - /docker/jellyfin/var-lib:/var/lib/jellyfin
       - /docker/jellyfin/var-log:/var/log/jellyfin
-      - /docker/jellyfin/timezone:/etc/timezone
       - media:/mnt/media
-    group_add:
-      - "100"
     devices:
       - /dev/dri/renderD128:/dev/dri/renderD128
     restart: unless-stopped
   bazarr:
     image: lscr.io/linuxserver/bazarr:latest
-    user: 1000:1000
     networks:
       - mediarr
     volumes:
@@ -69,7 +65,6 @@ services:
       - radarr
   jellyseerr:
     image: fallenbagel/jellyseerr:latest
-    user: 1000:1000
     networks:
       - mediarr
     ports:
@@ -82,13 +77,30 @@ services:
       - radarr
   prowlarr:
     image: linuxserver/prowlarr:latest
-    user: 1000:1000
     networks:
       - mediarr
     volumes:
       - /docker/prowlarr:/config
     ports:
       - 9696:9696
+    restart: unless-stopped
+    depends_on:
+      - flaresolverr
+  jackett:
+    image: lscr.io/linuxserver/jackett:latest
+    networks:
+      - mediarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - AUTO_UPDATE=true
+      - RUN_OPTS=
+    volumes:
+      - /docker/jackett:/config
+      - completed:/downloads
+    ports:
+      - 9117:9117
     restart: unless-stopped
     depends_on:
       - flaresolverr
@@ -103,7 +115,6 @@ services:
     restart: unless-stopped
   radarr:
     image: lscr.io/linuxserver/radarr:latest
-    user: 1000:1000
     networks:
       - mediarr
       - transmission
@@ -116,10 +127,10 @@ services:
     restart: unless-stopped
     depends_on:
       - prowlarr
+      - jackett
       - jellyfin
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
-    user: 1000:1000
     networks:
       - mediarr
       - transmission
@@ -129,6 +140,7 @@ services:
       - completed:/mnt/downloads
     depends_on:
       - prowlarr
+      - jackett
       - jellyfin
     ports:
       - 8989:8989
