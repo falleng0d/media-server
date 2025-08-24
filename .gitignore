@@ -306,3 +306,4 @@ cython_debug/
 .idea
 
 /*inventory*
+roles/setup-plex-shoko/vars/main.yml
