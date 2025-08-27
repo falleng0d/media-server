@@ -12,12 +12,6 @@ volumes:
       type: none
       o: bind
       device: ${MEDIA_DRIVE}
-  completed:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${MEDIA_DRIVE}/completed
   animes:
     driver: local
     driver_opts:
@@ -120,7 +114,7 @@ services:
       - mediarr
     volumes:
       - ${CONFIG_DIR}/jackett:/config
-      - completed:/downloads
+      - media:/data/
     restart: unless-stopped
   flaresolverr:
     image: ghcr.io/flaresolverr/flaresolverr:latest
