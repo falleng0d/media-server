@@ -34,6 +34,8 @@ volumes:
 services:
   jellyfin:
     image: jellyfin/jellyfin
+    devices:
+      - /dev/dri/renderD128:/dev/dri/renderD128
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -43,14 +45,16 @@ services:
       - JELLYFIN_CONFIG_DIR=/etc/jellyfin
       - JELLYFIN_DATA_DIR=/var/lib/jellyfin
       - JELLYFIN_LOG_DIR=/var/log/jellyfin
+    ports:
+      - 6565:8080
+    networks:
+      - mediarr
     volumes:
       - /docker/jellyfin/etc:/etc/jellyfin
       - /docker/jellyfin/var-cache:/var/cache/jellyfin
       - /docker/jellyfin/var-lib:/var/lib/jellyfin
       - /docker/jellyfin/var-log:/var/log/jellyfin
       - media:/mnt/media
-    devices:
-      - /dev/dri/renderD128:/dev/dri/renderD128
     restart: unless-stopped
   bazarr:
     image: lscr.io/linuxserver/bazarr:latest
@@ -59,17 +63,17 @@ services:
       - PGID=${PGID}
       - UMASK=${UMASK}
       - TZ=${TZ}
+    ports:
+      - 6767:6767
     networks:
       - mediarr
     volumes:
       - /docker/bazarr:/config
       - media:/mnt/media
-    ports:
-      - 6767:6767
-    restart: unless-stopped
     depends_on:
       - sonarr
       - radarr
+    restart: unless-stopped
   jellyseerr:
     image: fallenbagel/jellyseerr:latest
     environment:
@@ -77,29 +81,29 @@ services:
       - PGID=${PGID}
       - UMASK=${UMASK}
       - TZ=${TZ}
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    networks:
-      - mediarr
     ports:
       - 5055:5055
+    networks:
+      - mediarr
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - /docker/jellyseerr:/app/config
-    restart: unless-stopped
     depends_on:
       - sonarr
       - radarr
+    restart: unless-stopped
   prowlarr:
     image: linuxserver/prowlarr:latest
+    ports:
+      - 9696:9696
     networks:
       - mediarr
     volumes:
       - /docker/prowlarr:/config
-    ports:
-      - 9696:9696
-    restart: unless-stopped
     depends_on:
       - flaresolverr
+    restart: unless-stopped
   jackett:
     image: lscr.io/linuxserver/jackett:latest
     environment:
@@ -109,13 +113,13 @@ services:
       - TZ=${TZ}
       - AUTO_UPDATE=true
       - RUN_OPTS=
+    ports:
+      - 9117:9117
     networks:
       - mediarr
     volumes:
       - /docker/jackett:/config
       - completed:/downloads
-    ports:
-      - 9117:9117
     restart: unless-stopped
   flaresolverr:
     image: ghcr.io/flaresolverr/flaresolverr:latest
@@ -137,6 +141,8 @@ services:
       - PGID=${PGID}
       - UMASK=${UMASK}
       - TZ=${TZ}
+    ports:
+      - 7878:7878
     networks:
       - mediarr
       - transmission
@@ -144,13 +150,11 @@ services:
       - /docker/radarr:/config
       - media:/mnt/media
       - completed:/mnt/downloads
-    ports:
-      - 7878:7878
-    restart: unless-stopped
     depends_on:
       - prowlarr
       - jackett
       - jellyfin
+    restart: unless-stopped
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
     environment:
@@ -158,6 +162,8 @@ services:
       - PGID=${PGID}
       - UMASK=${UMASK}
       - TZ=${TZ}
+    ports:
+      - 8989:8989
     networks:
       - mediarr
       - transmission
@@ -169,8 +175,6 @@ services:
       - prowlarr
       - jackett
       - jellyfin
-    ports:
-      - 8989:8989
     restart: unless-stopped
   shoko:
     image: ghcr.io/shokoanime/server:latest
@@ -180,32 +184,32 @@ services:
       - PGID=${PGID}
       - UMASK=${UMASK}
       - TZ=${TZ}
+    ports:
+      - 8111:8111
     networks:
       - mediarr
     volumes:
       - /docker/shoko:/home/shoko/.shoko
       - animes:/mnt/anime
       - media:/mnt/import
-    ports:
-      - 8111:8111
     restart: unless-stopped
   homarr:
     container_name: homarr
     image: ghcr.io/homarr-labs/homarr:latest
-    restart: unless-stopped
-    networks:
-      - mediarr
-      - transmission
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
       - UMASK=${UMASK}
       - TZ=${TZ}
       - SECRET_ENCRYPTION_KEY=${SECRET_ENCRYPTION_KEY}
+    ports:
+      - 7575:7575
+    networks:
+      - mediarr
+      - transmission
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /docker/homarr/appdata:/appdata
-    ports:
-      - 7575:7575
+    restart: unless-stopped
