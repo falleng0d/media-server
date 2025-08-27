@@ -50,10 +50,10 @@ services:
     networks:
       - mediarr
     volumes:
-      - /docker/jellyfin/etc:/etc/jellyfin
-      - /docker/jellyfin/var-cache:/var/cache/jellyfin
-      - /docker/jellyfin/var-lib:/var/lib/jellyfin
-      - /docker/jellyfin/var-log:/var/log/jellyfin
+      - ${CONFIG_DIR}/jellyfin/etc:/etc/jellyfin
+      - ${CONFIG_DIR}/jellyfin/var-cache:/var/cache/jellyfin
+      - ${CONFIG_DIR}/jellyfin/var-lib:/var/lib/jellyfin
+      - ${CONFIG_DIR}/jellyfin/var-log:/var/log/jellyfin
       - media:/mnt/media
     restart: unless-stopped
   bazarr:
@@ -68,7 +68,7 @@ services:
     networks:
       - mediarr
     volumes:
-      - /docker/bazarr:/config
+      - ${CONFIG_DIR}/bazarr:/config
       - media:/data/
     depends_on:
       - sonarr
@@ -88,7 +88,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
-      - /docker/jellyseerr:/app/config
+      - ${CONFIG_DIR}/jellyseerr:/app/config
       - media:/data/
     depends_on:
       - sonarr
@@ -101,7 +101,7 @@ services:
     networks:
       - mediarr
     volumes:
-      - /docker/prowlarr:/config
+      - ${CONFIG_DIR}/prowlarr:/config
     depends_on:
       - flaresolverr
     restart: unless-stopped
@@ -119,7 +119,7 @@ services:
     networks:
       - mediarr
     volumes:
-      - /docker/jackett:/config
+      - ${CONFIG_DIR}/jackett:/config
       - completed:/downloads
     restart: unless-stopped
   flaresolverr:
@@ -148,7 +148,7 @@ services:
       - mediarr
       - transmission
     volumes:
-      - /docker/radarr:/config
+      - ${CONFIG_DIR}/radarr:/config
       - media:/data/
     depends_on:
       - prowlarr
@@ -168,7 +168,7 @@ services:
       - mediarr
       - transmission
     volumes:
-      - /docker/sonarr:/config
+      - ${CONFIG_DIR}/sonarr:/config
       - media:/data/
     depends_on:
       - prowlarr
@@ -188,7 +188,7 @@ services:
     networks:
       - mediarr
     volumes:
-      - /docker/shoko:/home/shoko/.shoko
+      - ${CONFIG_DIR}/shoko:/home/shoko/.shoko
       - animes:/mnt/anime
       - media:/mnt/import
     restart: unless-stopped
@@ -210,5 +210,5 @@ services:
       - "host.docker.internal:host-gateway"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /docker/homarr/appdata:/appdata
+      - ${CONFIG_DIR}/homarr/appdata:/appdata
     restart: unless-stopped
