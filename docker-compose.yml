@@ -1,6 +1,4 @@
 networks:
-  firefox:
-    driver: bridge
   mediarr:
     driver: bridge
   transmission:
@@ -37,6 +35,10 @@ services:
   jellyfin:
     image: jellyfin/jellyfin
     environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - UMASK=${UMASK}
+      - TZ=${TZ}
       - JELLYFIN_CACHE_DIR=/var/cache/jellyfin
       - JELLYFIN_CONFIG_DIR=/etc/jellyfin
       - JELLYFIN_DATA_DIR=/var/lib/jellyfin
@@ -52,6 +54,11 @@ services:
     restart: unless-stopped
   bazarr:
     image: lscr.io/linuxserver/bazarr:latest
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - UMASK=${UMASK}
+      - TZ=${TZ}
     networks:
       - mediarr
     volumes:
@@ -65,6 +72,13 @@ services:
       - radarr
   jellyseerr:
     image: fallenbagel/jellyseerr:latest
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - UMASK=${UMASK}
+      - TZ=${TZ}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - mediarr
     ports:
@@ -88,11 +102,15 @@ services:
       - flaresolverr
   jackett:
     image: lscr.io/linuxserver/jackett:latest
-    networks:
-      - mediarr
     environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - UMASK=${UMASK}
+      - TZ=${TZ}
       - AUTO_UPDATE=true
       - RUN_OPTS=
+    networks:
+      - mediarr
     volumes:
       - /docker/jackett:/config
       - completed:/downloads
@@ -101,15 +119,24 @@ services:
     restart: unless-stopped
   flaresolverr:
     image: ghcr.io/flaresolverr/flaresolverr:latest
-    networks:
-      - mediarr
     environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - UMASK=${UMASK}
+      - TZ=${TZ}
       - LOG_LEVEL=${LOG_LEVEL:-info}
       - LOG_HTML=${LOG_HTML:-false}
       - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
+    networks:
+      - mediarr
     restart: unless-stopped
   radarr:
     image: lscr.io/linuxserver/radarr:latest
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - UMASK=${UMASK}
+      - TZ=${TZ}
     networks:
       - mediarr
       - transmission
@@ -126,6 +153,11 @@ services:
       - jellyfin
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - UMASK=${UMASK}
+      - TZ=${TZ}
     networks:
       - mediarr
       - transmission
@@ -143,6 +175,11 @@ services:
   shoko:
     image: ghcr.io/shokoanime/server:latest
     shm_size: 256m
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - UMASK=${UMASK}
+      - TZ=${TZ}
     networks:
       - mediarr
     volumes:
@@ -156,10 +193,19 @@ services:
     container_name: homarr
     image: ghcr.io/homarr-labs/homarr:latest
     restart: unless-stopped
+    networks:
+      - mediarr
+      - transmission
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - UMASK=${UMASK}
+      - TZ=${TZ}
+      - SECRET_ENCRYPTION_KEY=${SECRET_ENCRYPTION_KEY}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /docker/homarr/appdata:/appdata
-    environment:
-      - SECRET_ENCRYPTION_KEY=403ee42f68ec31b8fd44c2b7be9e282a9dd5c0fda9853118c35ee6fa465e483b
     ports:
       - 7575:7575
