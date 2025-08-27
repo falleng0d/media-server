@@ -89,6 +89,7 @@ services:
       - "host.docker.internal:host-gateway"
     volumes:
       - /docker/jellyseerr:/app/config
+      - media:/data/
     depends_on:
       - sonarr
       - radarr
@@ -148,8 +149,7 @@ services:
       - transmission
     volumes:
       - /docker/radarr:/config
-      - media:/mnt/media
-      - completed:/mnt/downloads
+      - media:/data/
     depends_on:
       - prowlarr
       - jackett
