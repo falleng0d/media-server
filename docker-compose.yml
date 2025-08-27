@@ -169,8 +169,7 @@ services:
       - transmission
     volumes:
       - /docker/sonarr:/config
-      - media:/mnt/media
-      - completed:/mnt/downloads
+      - media:/data/
     depends_on:
       - prowlarr
       - jackett
