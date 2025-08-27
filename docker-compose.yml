@@ -69,7 +69,7 @@ services:
       - mediarr
     volumes:
       - /docker/bazarr:/config
-      - media:/mnt/media
+      - media:/data/
     depends_on:
       - sonarr
       - radarr
