@@ -1,0 +1,34 @@
+volumes:
+  media:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${MEDIA_DRIVE}
+
+networks:
+  transmission:
+    name: transmission
+    driver: bridge
+    attachable: true
+    
+services:
+  transmission:
+    image: haugene/transmission-openvpn
+    env_file: .env
+    cap_add:
+      - NET_ADMIN
+    networks:
+      - transmission
+    volumes:
+      - media:/data/
+      - /docker/transmission/openvpn/:/etc/openvpn/custom/
+      - /docker/transmission/config/:/config/
+    environment:
+      - OPENVPN_PROVIDER=custom
+      - OPENVPN_CONFIG=de-ber-udp
+      - LOCAL_NETWORK=192.168.1.0/24
+      - TRANSMISSION_WEB_UI=flood-for-transmission
+    ports:
+      - 9091:9091
+    restart: unless-stopped
