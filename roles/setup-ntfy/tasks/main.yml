@@ -3,7 +3,21 @@
 
 - name: Ensure ntfy configuration directory exists
   file:
-    path: "{{ ntfy_config_dir }}"
+    path: "{{ ntfy_config_dir }}/config"
+    state: directory
+    mode: '0755'
+  become: true
+
+- name: Ensure ntfy data directory exists
+  file:
+    path: "{{ ntfy_config_dir }}/data"
+    state: directory
+    mode: '0755'
+  become: true
+
+- name: Ensure ntfy cache directory exists
+  file:
+    path: "{{ ntfy_config_dir }}/cache"
     state: directory
     mode: '0755'
   become: true
@@ -11,11 +25,10 @@
 - name: Generate ntfy server configuration from template
   template:
     src: server.yml.j2
-    dest: "{{ ntfy_config_dir }}/server.yml"
+    dest: "{{ ntfy_config_dir }}/config/server.yml"
     mode: '0644'
     backup: true
   become: true
-  notify: restart ntfy
 
 - name: Create ntfy user management script
   template:

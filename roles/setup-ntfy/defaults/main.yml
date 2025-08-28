@@ -1,20 +1,24 @@
 ---
 # Defaults for ntfy setup
-ntfy_config_dir: "/etc/ntfy"
+
+# Host paths
+ntfy_config_dir: "/docker/ntfy" # Host path
+
+# Container paths
 ntfy_data_dir: "/var/lib/ntfy"
 
 # Basic configuration
 ntfy_base_url: "http://localhost:3434"
 ntfy_listen_http: ":80"
 
-# Cache configuration
+# Cache configuration (in container)
 ntfy_cache_file: "/var/cache/ntfy/cache.db"
 ntfy_cache_duration: "12h"
 ntfy_cache_startup_queries: ""
 ntfy_cache_batch_size: 0
 ntfy_cache_batch_timeout: "0s"
 
-# Authentication configuration
+# Authentication configuration (in container)
 ntfy_auth_file: "/var/lib/ntfy/auth.db"
 ntfy_auth_default_access: "deny-all"
 ntfy_enable_login: true
