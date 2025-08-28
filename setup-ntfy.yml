@@ -1,0 +1,6 @@
+---
+- name: Configure ntfy server with authentication
+  hosts: all
+  become: true
+  roles:
+    - role: setup-ntfy

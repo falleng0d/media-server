@@ -11,5 +11,8 @@ setup-plex-hama:
 setup-plex-shoko:
 	ansible-playbook -i ${HOSTNAME}, -K setup-plex-shoko.yaml
 
+setup-ntfy:
+	ansible-playbook -i ${HOSTNAME}, -K setup-ntfy.yml
+
 ping:
 	ansible -i ${HOSTNAME}, -m ping all

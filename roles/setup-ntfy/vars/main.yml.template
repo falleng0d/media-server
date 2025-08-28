@@ -1,0 +1,37 @@
+---
+# Override variables for ntfy configuration
+# Copy this file to vars/main.yml and customize as needed
+# These values will override the defaults in defaults/main.yml
+
+# Basic configuration
+# ntfy_base_url: "https://ntfy.yourdomain.com"
+# ntfy_behind_proxy: true
+
+# Authentication
+# ntfy_admin_username: "admin"
+# ntfy_admin_password: "your_secure_password"
+
+# Additional users
+# ntfy_users:
+#   - username: "user1"
+#     password: "password1"
+#     role: "user"
+#   - username: "moderator"
+#     password: "mod_password"
+#     role: "admin"
+
+# SMTP configuration (optional)
+# ntfy_smtp_sender_addr: "smtp.gmail.com:587"
+# ntfy_smtp_sender_user: "your-email@gmail.com"
+# ntfy_smtp_sender_pass: "your-app-password"
+# ntfy_smtp_sender_from: "ntfy@yourdomain.com"
+
+# Web Push (optional)
+# ntfy_web_push_public_key: "your_public_key"
+# ntfy_web_push_private_key: "your_private_key"
+# ntfy_web_push_file: "/var/lib/ntfy/webpush.db"
+# ntfy_web_push_email_address: "admin@yourdomain.com"
+
+# Custom rate limits
+# ntfy_visitor_request_limit_burst: 100
+# ntfy_visitor_message_daily_limit: 1000

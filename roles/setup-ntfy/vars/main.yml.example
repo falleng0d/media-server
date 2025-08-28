@@ -1,0 +1,34 @@
+---
+# Example ntfy configuration variables
+# Copy this file to main.yml and customize as needed
+
+# Basic configuration
+ntfy_base_url: "http://localhost:3434"
+ntfy_config_dir: "/docker/ntfy"
+
+# Authentication settings
+ntfy_admin_username: "admin"
+ntfy_admin_password: "change_me_secure_password"
+
+# Additional users
+ntfy_users:
+  - username: "user1"
+    password: "user1_password"
+    role: "user"
+  - username: "moderator"
+    password: "mod_password"
+    role: "admin"
+
+# For production behind a reverse proxy
+# ntfy_base_url: "https://ntfy.yourdomain.com"
+# ntfy_behind_proxy: true
+
+# SMTP configuration for email notifications
+# ntfy_smtp_sender_addr: "smtp.gmail.com:587"
+# ntfy_smtp_sender_user: "your-email@gmail.com"
+# ntfy_smtp_sender_pass: "your-app-password"
+# ntfy_smtp_sender_from: "ntfy@yourdomain.com"
+
+# Custom rate limits
+# ntfy_visitor_request_limit_burst: 100
+# ntfy_visitor_message_daily_limit: 1000

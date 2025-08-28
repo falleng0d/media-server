@@ -1,0 +1,50 @@
+---
+# Ansible tasks to configure ntfy server
+
+- name: Ensure ntfy configuration directory exists
+  file:
+    path: "{{ ntfy_config_dir }}"
+    state: directory
+    mode: '0755'
+  become: true
+
+- name: Generate ntfy server configuration from template
+  template:
+    src: server.yml.j2
+    dest: "{{ ntfy_config_dir }}/server.yml"
+    mode: '0644'
+    backup: true
+  become: true
+  notify: restart ntfy
+
+- name: Create ntfy user management script
+  template:
+    src: setup-users.sh.j2
+    dest: "{{ ntfy_config_dir }}/setup-users.sh"
+    mode: '0755'
+  become: true
+  when: ntfy_admin_username or ntfy_users | length > 0
+
+- name: Display configuration summary
+  debug:
+    msg: |
+      ntfy configuration has been generated:
+      - Config file: {{ ntfy_config_dir }}/server.yml
+      - Authentication: {{ 'Enabled' if ntfy_auth_file else 'Disabled' }}
+      - Default access: {{ ntfy_auth_default_access }}
+      - Admin user: {{ ntfy_admin_username if ntfy_admin_username else 'None configured' }}
+      - Additional users: {{ ntfy_users | length }}
+      {% if ntfy_admin_username and not ntfy_admin_password %}
+      
+      WARNING: No password set for admin user '{{ ntfy_admin_username }}'.
+      You will need to set the password manually when the container starts.
+      {% endif %}
+
+- name: Display next steps
+  debug:
+    msg: |
+      Next steps:
+      1. Start your ntfy container with docker-compose
+      2. {% if ntfy_admin_username and not ntfy_admin_password %}Set password for admin user: docker exec -it <container> ntfy user change-pass {{ ntfy_admin_username }}{% endif %}
+      3. Access ntfy at: {{ ntfy_base_url }}
+      4. {% if ntfy_users | length > 0 %}Run user setup script: docker exec -it <container> /etc/ntfy/setup-users.sh{% endif %}

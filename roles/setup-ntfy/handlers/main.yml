@@ -1,0 +1,6 @@
+---
+# Handlers for ntfy setup
+
+- name: restart ntfy
+  debug:
+    msg: "ntfy configuration updated. Please restart your ntfy container to apply changes."

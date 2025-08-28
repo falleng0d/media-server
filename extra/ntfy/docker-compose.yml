@@ -8,48 +8,7 @@ services:
   ntfy:
     image: binwiederhier/ntfy
     command:
-      - sh
-      - -c
-      - |
-        cat > /etc/ntfy/server.yml << 'EOF'
-        # ntfy server configuration with authentication
-        base-url: "http://localhost:3434"
-        listen-http: ":80"
-
-        # Cache configuration
-        cache-file: "/var/lib/ntfy/cache.db"
-        cache-duration: "12h"
-
-        # Authentication configuration
-        auth-file: "/var/lib/ntfy/auth.db"
-        auth-default-access: "deny-all"
-        enable-login: true
-        enable-signup: false
-
-        # Attachment configuration
-        attachment-cache-dir: "/var/lib/ntfy/attachments"
-        attachment-total-size-limit: "5G"
-        attachment-file-size-limit: "15M"
-        attachment-expiry-duration: "3h"
-
-        # Rate limiting
-        visitor-request-limit-burst: 60
-        visitor-request-limit-replenish: "5s"
-        visitor-attachment-total-size-limit: "100M"
-        visitor-attachment-daily-bandwidth-limit: "500M"
-
-        # Logging
-        log-level: "info"
-        EOF
-
-        # Create default admin user if auth database doesn't exist
-        if [ ! -f /var/lib/ntfy/auth.db ]; then
-          echo "Creating default admin user..."
-          ntfy user add --role=admin admin
-        fi
-
-        # Start the server
-        exec ntfy serve
+      - serve
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -58,7 +17,6 @@ services:
     volumes:
       - ${CONFIG_DIR}/ntfy:/etc/ntfy
       - /var/cache/ntfy:/var/cache/ntfy
-      - /var/cache/ntfy:/var/lib/ntfy
     networks:
       - ntfy
     ports:
