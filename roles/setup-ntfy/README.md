@@ -99,7 +99,9 @@ services:
 ### Initial Setup
 1. Run the Ansible role to generate configuration
 2. Start the ntfy container
-3. Run the user setup script: `docker exec -it <container> /etc/ntfy/setup-users.sh`
+3. Run the user setup script from the host: `/docker/ntfy/setup-users.sh`
+   - The script automatically finds the running ntfy container
+   - No need to copy files or exec into the container
 
 ### Manual User Management
 ```bash

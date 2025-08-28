@@ -30,7 +30,7 @@
     backup: true
   become: true
 
-- name: Create ntfy user management script
+- name: Create ntfy user management script (host-based)
   template:
     src: setup-users.sh.j2
     dest: "{{ ntfy_config_dir }}/setup-users.sh"
@@ -58,6 +58,10 @@
     msg: |
       Next steps:
       1. Start your ntfy container with docker-compose
-      2. {% if ntfy_admin_username and not ntfy_admin_password %}Set password for admin user: docker exec -it <container> ntfy user change-pass {{ ntfy_admin_username }}{% endif %}
+      2. {% if ntfy_admin_username or ntfy_users | length > 0 %}Run user setup script from host: {{ ntfy_config_dir }}/setup-users.sh{% endif %}
       3. Access ntfy at: {{ ntfy_base_url }}
-      4. {% if ntfy_users | length > 0 %}Run user setup script: docker exec -it <container> /etc/ntfy/setup-users.sh{% endif %}
+
+      The setup script will automatically:
+      - Find the running ntfy container
+      - Create/update users as configured
+      - Set passwords (if provided in variables)
