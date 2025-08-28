@@ -4,7 +4,7 @@
 
 # Basic configuration
 ntfy_base_url: "http://localhost:3434"
-ntfy_config_dir: "/docker/ntfy"
+ntfy_config_dir: "/etc/ntfy"
 
 # Authentication settings
 ntfy_admin_username: "admin"

@@ -15,8 +15,9 @@ services:
       - UMASK=${UMASK}
       - TZ=${TZ}
     volumes:
-      - ${CONFIG_DIR}/ntfy:/etc/ntfy
-      - /var/cache/ntfy:/var/cache/ntfy
+      - ${CONFIG_DIR}/ntfy/cache:/var/cache/ntfy
+      - ${CONFIG_DIR}/ntfy/data:/var/lib/ntfy
+      - ${CONFIG_DIR}/ntfy/config:/etc/ntfy
     networks:
       - ntfy
     ports:
