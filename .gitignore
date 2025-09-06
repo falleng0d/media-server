@@ -308,3 +308,5 @@ cython_debug/
 /*inventory*
 roles/setup-plex-shoko/vars/main.yml
 roles/setup-ntfy/vars/main.yml
+
+terraform/
