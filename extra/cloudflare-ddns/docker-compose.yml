@@ -1,0 +1,12 @@
+services:
+  cloudflare-ddns:
+    image: favonia/cloudflare-ddns:latest
+    environment:
+      - CF_API_TOKEN=${CF_API_TOKEN}
+      - DOMAINS=${DOMAINS}
+      - PROXIED=${PROXIED}
+      - UPDATE_CRON=${DDNS_UPDATE_CRON:-@every 5m}
+      - DELETE_ON_STOP=false
+      - TZ=${TZ}
+    restart: unless-stopped
+    network_mode: host
