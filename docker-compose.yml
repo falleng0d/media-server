@@ -28,6 +28,7 @@ volumes:
 services:
   jellyfin:
     image: jellyfin/jellyfin
+    pull_policy: always
     devices:
       - /dev/dri/renderD128:/dev/dri/renderD128
     environment:
@@ -52,6 +53,7 @@ services:
     restart: unless-stopped
   bazarr:
     image: lscr.io/linuxserver/bazarr:latest
+    pull_policy: always
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -70,6 +72,7 @@ services:
     restart: unless-stopped
   jellyseerr:
     image: fallenbagel/jellyseerr:latest
+    pull_policy: always
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -90,6 +93,7 @@ services:
     restart: unless-stopped
   prowlarr:
     image: linuxserver/prowlarr:latest
+    pull_policy: always
     ports:
       - 9696:9696
     networks:
@@ -101,6 +105,7 @@ services:
     restart: unless-stopped
   jackett:
     image: lscr.io/linuxserver/jackett:latest
+    pull_policy: always
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -118,6 +123,7 @@ services:
     restart: unless-stopped
   flaresolverr:
     image: ghcr.io/flaresolverr/flaresolverr:latest
+    pull_policy: always
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -131,6 +137,7 @@ services:
     restart: unless-stopped
   radarr:
     image: lscr.io/linuxserver/radarr:latest
+    pull_policy: always
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -151,6 +158,7 @@ services:
     restart: unless-stopped
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
+    pull_policy: always
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -171,6 +179,7 @@ services:
     restart: unless-stopped
   shoko:
     image: ghcr.io/shokoanime/server:latest
+    pull_policy: always
     shm_size: 256m
     environment:
       - PUID=${PUID}
@@ -189,6 +198,7 @@ services:
   homarr:
     container_name: homarr
     image: ghcr.io/homarr-labs/homarr:latest
+    pull_policy: always
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
