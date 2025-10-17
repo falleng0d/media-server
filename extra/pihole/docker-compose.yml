@@ -5,42 +5,34 @@
 
 services:
   pihole:
-    container_name: pihole
     image: pihole/pihole:latest
     pull_policy: always
     ports:
       # DNS Ports (required)
       - "53:53/tcp"
       - "53:53/udp"
-      # HTTP Port
-      - "80:80/tcp"
-      # HTTPS Port (self-signed certificate)
-      - "443:443/tcp"
       # Uncomment below if using Pi-hole as DHCP server
       #- "67:67/udp"
       # Uncomment below if using Pi-hole as NTP server
       #- "123:123/udp"
     environment:
       # Timezone for log rotation
-      TZ: ${TZ:-UTC}
+      - TZ=${TZ}
       # Web interface password (set via environment variable or use random)
       # To set no password, use: FTLCONF_webserver_api_password: ''
-      FTLCONF_webserver_api_password: ${PIHOLE_PASSWORD:-admin}
+      - FTLCONF_webserver_api_password=${PIHOLE_PASSWORD:-admin}
       # DNS listening mode - 'all' for Docker bridge networks
-      FTLCONF_dns_listeningMode: all
+      - FTLCONF_dns_listeningMode=all
       # Upstream DNS servers (semicolon-delimited)
       # Supports non-standard ports with #[port], e.g., 127.0.0.1#5053;8.8.8.8
-      FTLCONF_dns_upstreams: ${PIHOLE_UPSTREAM_DNS:-8.8.8.8;8.8.4.4}
+      - FTLCONF_dns_upstreams=${PIHOLE_UPSTREAM_DNS:-8.8.8.8;8.8.4.4}
       # Optional: Enable custom dnsmasq config loading
-      # FTLCONF_misc_etc_dnsmasq_d: 'true'
+      # - FTLCONF_misc_etc_dnsmasq_d=true
       # Optional: Tail FTL log output
-      TAIL_FTL_LOG: 1
+      - TAIL_FTL_LOG=1
     volumes:
       # Persist Pi-hole configuration and databases
-      - ./etc-pihole:/etc/pihole
-      # Uncomment below if using custom dnsmasq configs
-      # Note: Only needed if upgrading from v5 or using custom configs
-      #- ./etc-dnsmasq.d:/etc/dnsmasq.d
+      - ${CONFIG_DIR}/pihole/etc-pihole:/etc/pihole
     cap_add:
       # Required: Allows binding to DNS port 53
       - NET_BIND_SERVICE
