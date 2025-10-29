@@ -178,6 +178,20 @@ services:
       - jackett
       - jellyfin
     restart: unless-stopped
+    labels:
+      traefik.enable: true
+      traefik.docker.network: dokploy-network
+      traefik.http.routers.media-server-sonarr.web.entrypoints: web
+      traefik.http.routers.media-server-sonarr.web.middlewares: redirect-to-https@file
+      traefik.http.routers.media-server-sonarr.web.rule: Host(`${SONARR_HOST}`)
+      traefik.http.routers.media-server-sonarr.web.service: media-server-sonarr.web
+      traefik.http.routers.media-server-sonarr.websecure.middlewares: local-network-ipallowlist@file
+      traefik.http.routers.media-server-sonarr.websecure.entrypoints: websecure
+      traefik.http.routers.media-server-sonarr.websecure.rule: Host(`${SONARR_HOST}`)
+      traefik.http.routers.media-server-sonarr.websecure.service: media-server-sonarr.websecure
+      traefik.http.routers.media-server-sonarr.websecure.tls.certresolver: dns-cloudflare
+      traefik.http.services.media-server-sonarr.web.loadbalancer.server.port: 8989
+      traefik.http.services.media-server-sonarr.websecure.loadbalancer.server.port: 8989
   shoko:
     image: ghcr.io/shokoanime/server:latest
     pull_policy: always
