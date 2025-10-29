@@ -159,6 +159,7 @@ services:
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
     pull_policy: always
+    container_name: sonarr
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
