@@ -182,7 +182,7 @@ services:
       traefik.enable: true
       traefik.docker.network: dokploy-network
       traefik.http.routers.media-server-sonarr-web.entrypoints: web
-      traefik.http.routers.media-server-sonarr-web.middlewares: redirect-to-https@file
+      traefik.http.routers.media-server-sonarr-web.middlewares: redirect-to-https@file,local-network-ipallowlist@file
       traefik.http.routers.media-server-sonarr-web.rule: Host(`${SONARR_HOST}`)
       traefik.http.routers.media-server-sonarr-web.service: media-server-sonarr-web
       traefik.http.routers.media-server-sonarr-websecure.middlewares: local-network-ipallowlist@file
