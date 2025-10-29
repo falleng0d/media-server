@@ -170,6 +170,7 @@ services:
     networks:
       - mediarr
       - transmission
+      - dokploy-network
     volumes:
       - ${CONFIG_DIR}/sonarr:/config
       - media:/data/
