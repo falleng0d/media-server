@@ -1,0 +1,25 @@
+---
+- name: Ensure Traefik dynamic config directory exists
+  become: true
+  file:
+    path: "{{ plex_traefik_config_dir }}"
+    state: directory
+    mode: "0755"
+
+- name: Create Plex Traefik configuration
+  become: true
+  template:
+    src: plex.yml.j2
+    dest: "{{ plex_traefik_config_dir }}/plex.yml"
+    mode: "0644"
+  register: traefik_config_changed
+
+- name: Find Traefik container
+  shell: docker ps --format '{\{.Names}}' --filter "name=traefik"
+  register: traefik_container
+  changed_when: false
+
+- name: Restart Traefik container
+  become: true
+  shell: docker restart {{ traefik_container.stdout }}
+  when: traefik_config_changed.changed and traefik_container.stdout

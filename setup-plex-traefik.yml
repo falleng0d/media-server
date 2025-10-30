@@ -1,0 +1,7 @@
+---
+- name: Configure Plex Traefik
+  hosts: all
+  become: true
+  roles:
+    - role: setup-plex-traefik
+

@@ -1,0 +1,16 @@
+---
+# Override variables for Plex Traefik configuration
+# These values will override the defaults in defaults/main.yml
+
+# Domain for Plex access
+# Update this to your actual Plex domain
+plex_domain: "plex.example.com"
+
+# Traefik dynamic configuration directory
+# Usually /etc/dokploy/traefik/dynamic for Dokploy installations
+# plex_traefik_config_dir: "/etc/dokploy/traefik/dynamic"
+
+# Backend service URL for Plex
+# Default points to Docker host gateway on port 32400
+# plex_service_url: "http://172.17.0.1:32400"
+

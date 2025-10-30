@@ -1,0 +1,27 @@
+#/etc/dokploy/traefik/dynamic/plex.yml
+http:
+  routers:
+    plex-router:
+      rule: Host(`{{ plex_domain }}`)
+      service: plex-service
+      middlewares:
+        - redirect-to-https
+        - local-network-ipallowlist
+      entryPoints:
+        - web
+    plex-router-websecure:
+      rule: Host(`{{ plex_domain }}`)
+      service: plex-service
+      middlewares:
+        - local-network-ipallowlist
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: dns-cloudflare
+  services:
+    plex-service:
+      loadBalancer:
+        servers:
+          - url: {{ plex_service_url }}
+        passHostHeader: true
+

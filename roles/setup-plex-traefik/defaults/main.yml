@@ -1,0 +1,5 @@
+---
+# Defaults for Plex Traefik setup
+plex_domain: "plex.example.com"
+plex_traefik_config_dir: "/etc/dokploy/traefik/dynamic"
+plex_service_url: "http://172.17.0.1:32400"

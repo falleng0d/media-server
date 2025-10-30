@@ -14,5 +14,8 @@ setup-plex-shoko:
 setup-ntfy:
 	ansible-playbook -i ${HOSTNAME}, -K setup-ntfy.yml
 
+setup-plex-traefik:
+	ansible-playbook -i ${HOSTNAME}, -K setup-plex-traefik.yml
+
 ping:
 	ansible -i ${HOSTNAME}, -m ping all
