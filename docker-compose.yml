@@ -82,6 +82,7 @@ services:
       - 5055:5055
     networks:
       - mediarr
+      - dokploy-network
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
@@ -220,6 +221,7 @@ services:
       - 8111:8111
     networks:
       - mediarr
+      - dokploy-network
     volumes:
       - ${CONFIG_DIR}/shoko:/home/shoko/.shoko
       - animes:/mnt/anime
