@@ -91,6 +91,20 @@ services:
       - sonarr
       - radarr
     restart: unless-stopped
+    labels:
+      traefik.enable: true
+      traefik.docker.network: dokploy-network
+      traefik.http.routers.media-server-jellyseerr-web.entrypoints: web
+      traefik.http.routers.media-server-jellyseerr-web.middlewares: redirect-to-https@file,local-network-ipallowlist@file
+      traefik.http.routers.media-server-jellyseerr-web.rule: Host(`${JELLYSEERR_HOST}`)
+      traefik.http.routers.media-server-jellyseerr-web.service: media-server-jellyseerr-web
+      traefik.http.routers.media-server-jellyseerr-websecure.middlewares: local-network-ipallowlist@file
+      traefik.http.routers.media-server-jellyseerr-websecure.entrypoints: websecure
+      traefik.http.routers.media-server-jellyseerr-websecure.rule: Host(`${JELLYSEERR_HOST}`)
+      traefik.http.routers.media-server-jellyseerr-websecure.service: media-server-jellyseerr-websecure
+      traefik.http.routers.media-server-jellyseerr-websecure.tls.certresolver: dns-cloudflare
+      traefik.http.services.media-server-jellyseerr-web.loadbalancer.server.port: 8989
+      traefik.http.services.media-server-jellyseerr-websecure.loadbalancer.server.port: 8989
   prowlarr:
     image: linuxserver/prowlarr:latest
     pull_policy: always
@@ -211,6 +225,20 @@ services:
       - animes:/mnt/anime
       - media:/mnt/import
     restart: unless-stopped
+    labels:
+      traefik.enable: true
+      traefik.docker.network: dokploy-network
+      traefik.http.routers.media-server-shoko-web.entrypoints: web
+      traefik.http.routers.media-server-shoko-web.middlewares: redirect-to-https@file,local-network-ipallowlist@file
+      traefik.http.routers.media-server-shoko-web.rule: Host(`${SHOKO_HOST}`)
+      traefik.http.routers.media-server-shoko-web.service: media-server-shoko-web
+      traefik.http.routers.media-server-shoko-websecure.middlewares: local-network-ipallowlist@file
+      traefik.http.routers.media-server-shoko-websecure.entrypoints: websecure
+      traefik.http.routers.media-server-shoko-websecure.rule: Host(`${SHOKO_HOST}`)
+      traefik.http.routers.media-server-shoko-websecure.service: media-server-shoko-websecure
+      traefik.http.routers.media-server-shoko-websecure.tls.certresolver: dns-cloudflare
+      traefik.http.services.media-server-shoko-web.loadbalancer.server.port: 8989
+      traefik.http.services.media-server-shoko-websecure.loadbalancer.server.port: 8989
   homarr:
     container_name: homarr
     image: ghcr.io/homarr-labs/homarr:latest
