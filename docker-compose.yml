@@ -169,7 +169,7 @@ services:
     depends_on:
       - prowlarr
       - jackett
-      - jellyfin
+      # - jellyfin
     restart: unless-stopped
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
@@ -192,7 +192,7 @@ services:
     depends_on:
       - prowlarr
       - jackett
-      - jellyfin
+      # - jellyfin
     restart: unless-stopped
     labels:
       traefik.enable: true
