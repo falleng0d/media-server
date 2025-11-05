@@ -12,6 +12,12 @@ volumes:
       type: none
       o: bind
       device: ${MEDIA_DRIVE}
+  media2:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${MEDIA_DRIVE_2}
   animes:
     driver: local
     driver_opts:
@@ -66,6 +72,7 @@ services:
     volumes:
       - ${CONFIG_DIR}/bazarr:/config
       - media:/data/
+      - media2:/data2/
     depends_on:
       - sonarr
       - radarr
@@ -88,6 +95,7 @@ services:
     volumes:
       - ${CONFIG_DIR}/jellyseerr:/app/config
       - media:/data/
+      - media2:/data2/
     depends_on:
       - sonarr
       - radarr
@@ -118,24 +126,25 @@ services:
     depends_on:
       - flaresolverr
     restart: unless-stopped
-  jackett:
-    image: lscr.io/linuxserver/jackett:latest
-    pull_policy: always
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - UMASK=${UMASK}
-      - TZ=${TZ}
-      - AUTO_UPDATE=true
-      - RUN_OPTS=
-    ports:
-      - 9117:9117
-    networks:
-      - mediarr
-    volumes:
-      - ${CONFIG_DIR}/jackett:/config
-      - media:/data/
-    restart: unless-stopped
+  # jackett:
+  #   image: lscr.io/linuxserver/jackett:latest
+  #   pull_policy: always
+  #   environment:
+  #     - PUID=${PUID}
+  #     - PGID=${PGID}
+  #     - UMASK=${UMASK}
+  #     - TZ=${TZ}
+  #     - AUTO_UPDATE=true
+  #     - RUN_OPTS=
+  #   ports:
+  #     - 9117:9117
+  #   networks:
+  #     - mediarr
+  #   volumes:
+  #     - ${CONFIG_DIR}/jackett:/config
+  #     - media:/data/
+  #     - media2:/data2/
+  #   restart: unless-stopped
   flaresolverr:
     image: ghcr.io/flaresolverr/flaresolverr:latest
     pull_policy: always
@@ -166,6 +175,7 @@ services:
     volumes:
       - ${CONFIG_DIR}/radarr:/config
       - media:/data/
+      - media2:/data2/
     depends_on:
       - prowlarr
       - jackett
@@ -189,6 +199,7 @@ services:
     volumes:
       - ${CONFIG_DIR}/sonarr:/config
       - media:/data/
+      - media2:/data2/
     depends_on:
       - prowlarr
       - jackett
