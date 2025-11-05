@@ -4,6 +4,9 @@ networks:
   transmission:
     name: transmission
     external: true
+  dokploy-network:
+    name: dokploy-network
+    external: true
 
 volumes:
   media:
