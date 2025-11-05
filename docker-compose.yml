@@ -160,6 +160,7 @@ services:
     networks:
       - mediarr
       - transmission
+      - dokploy-network
     volumes:
       - ${CONFIG_DIR}/radarr:/config
       - media:/data/
