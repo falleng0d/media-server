@@ -57,6 +57,7 @@ services:
       - 6767:6767
     networks:
       - mediarr
+      - dokploy-network
     volumes:
       - ${CONFIG_DIR}/bazarr:/config
       - media:/data/
@@ -65,6 +66,20 @@ services:
       - sonarr
       - radarr
     restart: unless-stopped
+    labels:
+      traefik.enable: true
+      traefik.docker.network: dokploy-network
+      traefik.http.routers.media-server-bazarr-web.entrypoints: web
+      traefik.http.routers.media-server-bazarr-web.middlewares: redirect-to-https@file,local-network-ipallowlist@file
+      traefik.http.routers.media-server-bazarr-web.rule: Host(`${BAZARR_HOST}`)
+      traefik.http.routers.media-server-bazarr-web.service: media-server-bazarr-web
+      traefik.http.routers.media-server-bazarr-websecure.middlewares: local-network-ipallowlist@file
+      traefik.http.routers.media-server-bazarr-websecure.entrypoints: websecure
+      traefik.http.routers.media-server-bazarr-websecure.rule: Host(`${BAZARR_HOST}`)
+      traefik.http.routers.media-server-bazarr-websecure.service: media-server-bazarr-websecure
+      traefik.http.routers.media-server-bazarr-websecure.tls.certresolver: dns-cloudflare
+      traefik.http.services.media-server-bazarr-web.loadbalancer.server.port: 8989
+      traefik.http.services.media-server-bazarr-websecure.loadbalancer.server.port: 8989
   jellyseerr:
     image: fallenbagel/jellyseerr:latest
     pull_policy: always
@@ -109,11 +124,26 @@ services:
       - 9696:9696
     networks:
       - mediarr
+      - dokploy-network
     volumes:
       - ${CONFIG_DIR}/prowlarr:/config
     depends_on:
       - flaresolverr
     restart: unless-stopped
+    labels:
+      traefik.enable: true
+      traefik.docker.network: dokploy-network
+      traefik.http.routers.media-server-prowlarr-web.entrypoints: web
+      traefik.http.routers.media-server-prowlarr-web.middlewares: redirect-to-https@file,local-network-ipallowlist@file
+      traefik.http.routers.media-server-prowlarr-web.rule: Host(`${PROWLARR_HOST}`)
+      traefik.http.routers.media-server-prowlarr-web.service: media-server-prowlarr-web
+      traefik.http.routers.media-server-prowlarr-websecure.middlewares: local-network-ipallowlist@file
+      traefik.http.routers.media-server-prowlarr-websecure.entrypoints: websecure
+      traefik.http.routers.media-server-prowlarr-websecure.rule: Host(`${PROWLARR_HOST}`)
+      traefik.http.routers.media-server-prowlarr-websecure.service: media-server-prowlarr-websecure
+      traefik.http.routers.media-server-prowlarr-websecure.tls.certresolver: dns-cloudflare
+      traefik.http.services.media-server-prowlarr-web.loadbalancer.server.port: 8989
+      traefik.http.services.media-server-prowlarr-websecure.loadbalancer.server.port: 8989
   # jackett:
   #   image: lscr.io/linuxserver/jackett:latest
   #   pull_policy: always
@@ -270,9 +300,24 @@ services:
     networks:
       - mediarr
       - transmission
+      - dokploy-network
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${CONFIG_DIR}/homarr/appdata:/appdata
     restart: unless-stopped
+    labels:
+      traefik.enable: true
+      traefik.docker.network: dokploy-network
+      traefik.http.routers.media-server-homarr-web.entrypoints: web
+      traefik.http.routers.media-server-homarr-web.middlewares: redirect-to-https@file,local-network-ipallowlist@file
+      traefik.http.routers.media-server-homarr-web.rule: Host(`${HOMARR_HOST}`)
+      traefik.http.routers.media-server-homarr-web.service: media-server-homarr-web
+      traefik.http.routers.media-server-homarr-websecure.middlewares: local-network-ipallowlist@file
+      traefik.http.routers.media-server-homarr-websecure.entrypoints: websecure
+      traefik.http.routers.media-server-homarr-websecure.rule: Host(`${HOMARR_HOST}`)
+      traefik.http.routers.media-server-homarr-websecure.service: media-server-homarr-websecure
+      traefik.http.routers.media-server-homarr-websecure.tls.certresolver: dns-cloudflare
+      traefik.http.services.media-server-homarr-web.loadbalancer.server.port: 8989
+      traefik.http.services.media-server-homarr-websecure.loadbalancer.server.port: 8989
