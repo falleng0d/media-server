@@ -169,6 +169,20 @@ services:
       # - jackett
       # - jellyfin
     restart: unless-stopped
+    labels:
+      traefik.enable: true
+      traefik.docker.network: dokploy-network
+      traefik.http.routers.media-server-radarr-web.entrypoints: web
+      traefik.http.routers.media-server-radarr-web.middlewares: redirect-to-https@file,local-network-ipallowlist@file
+      traefik.http.routers.media-server-radarr-web.rule: Host(`${RADARR_HOST}`)
+      traefik.http.routers.media-server-radarr-web.service: media-server-radarr-web
+      traefik.http.routers.media-server-radarr-websecure.middlewares: local-network-ipallowlist@file
+      traefik.http.routers.media-server-radarr-websecure.entrypoints: websecure
+      traefik.http.routers.media-server-radarr-websecure.rule: Host(`${RADARR_HOST}`)
+      traefik.http.routers.media-server-radarr-websecure.service: media-server-radarr-websecure
+      traefik.http.routers.media-server-radarr-websecure.tls.certresolver: dns-cloudflare
+      traefik.http.services.media-server-radarr-web.loadbalancer.server.port: 8989
+      traefik.http.services.media-server-radarr-websecure.loadbalancer.server.port: 8989
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
     pull_policy: always
