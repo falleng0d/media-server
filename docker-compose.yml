@@ -178,7 +178,7 @@ services:
       - media2:/data2/
     depends_on:
       - prowlarr
-      - jackett
+      # - jackett
       # - jellyfin
     restart: unless-stopped
   sonarr:
@@ -202,7 +202,7 @@ services:
       - media2:/data2/
     depends_on:
       - prowlarr
-      - jackett
+      # - jackett
       # - jellyfin
     restart: unless-stopped
     labels:
