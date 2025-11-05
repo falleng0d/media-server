@@ -5,6 +5,12 @@ volumes:
       type: none
       o: bind
       device: ${MEDIA_DRIVE}
+  media2:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${MEDIA_DRIVE_2}
 
 networks:
   transmission:
@@ -22,6 +28,7 @@ services:
       - transmission
     volumes:
       - media:/data/
+      - media2:/data2/
       - /docker/transmission/openvpn/:/etc/openvpn/custom/
       - /docker/transmission/config/:/config/
     environment:
