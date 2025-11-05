@@ -237,6 +237,8 @@ services:
       - ${CONFIG_DIR}/shoko:/home/shoko/.shoko
       - animes:/mnt/anime
       - media:/mnt/import
+      - media:/mnt/media
+      - media2:/mnt/media2
     restart: unless-stopped
     labels:
       traefik.enable: true
