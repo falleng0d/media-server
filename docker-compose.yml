@@ -18,18 +18,6 @@ volumes:
       type: none
       o: bind
       device: ${MEDIA_DRIVE_2}
-  animes:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${MEDIA_DRIVE}/Animes
-  movies:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${MEDIA_DRIVE}/Movies
 
 services:
   # jellyfin:
@@ -235,8 +223,6 @@ services:
       - dokploy-network
     volumes:
       - ${CONFIG_DIR}/shoko:/home/shoko/.shoko
-      - animes:/mnt/anime
-      - media:/mnt/import
       - media:/mnt/media
       - media2:/mnt/media2
     restart: unless-stopped
