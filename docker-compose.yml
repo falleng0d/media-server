@@ -149,10 +149,10 @@ services:
       traefik.http.services.media-server-prowlarr-websecure.loadbalancer.server.port: 9696
   rarbg-selfhosted:
     image: ghcr.io/mgdigital/rarbg-selfhosted:latest
-    environment:
-      - PATH_SQLITE_DB=/rarbg_db.sqlite
-      - PATH_TRACKERS=/trackers.txt
-      - DEBUG=0
+    # environment:
+      # - PATH_SQLITE_DB=/rarbg_db.sqlite
+      # - PATH_TRACKERS=/trackers.txt
+      # - DEBUG=0
     # ports:
       # - "3333:3333"
     restart: unless-stopped
