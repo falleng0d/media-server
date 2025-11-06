@@ -74,11 +74,11 @@ services:
       traefik.docker.network: dokploy-network
       traefik.http.routers.media-server-bazarr-web.entrypoints: web
       traefik.http.routers.media-server-bazarr-web.middlewares: redirect-to-https@file,local-network-ipallowlist@file
-      traefik.http.routers.media-server-bazarr-web.rule: Host(`${BAZARR_HOST}`)
+      traefik.http.routers.media-server-bazarr-web.rule: Host(`bazarr.${DOMAIN}`)
       traefik.http.routers.media-server-bazarr-web.service: media-server-bazarr-web
       traefik.http.routers.media-server-bazarr-websecure.middlewares: local-network-ipallowlist@file
       traefik.http.routers.media-server-bazarr-websecure.entrypoints: websecure
-      traefik.http.routers.media-server-bazarr-websecure.rule: Host(`${BAZARR_HOST}`)
+      traefik.http.routers.media-server-bazarr-websecure.rule: Host(`bazarr.${DOMAIN}`)
       traefik.http.routers.media-server-bazarr-websecure.service: media-server-bazarr-websecure
       traefik.http.routers.media-server-bazarr-websecure.tls.certresolver: dns-cloudflare
       traefik.http.services.media-server-bazarr-web.loadbalancer.server.port: 6767
@@ -111,11 +111,11 @@ services:
       traefik.docker.network: dokploy-network
       traefik.http.routers.media-server-jellyseerr-web.entrypoints: web
       traefik.http.routers.media-server-jellyseerr-web.middlewares: redirect-to-https@file,local-network-ipallowlist@file
-      traefik.http.routers.media-server-jellyseerr-web.rule: Host(`${JELLYSEERR_HOST}`)
+      traefik.http.routers.media-server-jellyseerr-web.rule: Host(`jellyseerr.${DOMAIN}`)
       traefik.http.routers.media-server-jellyseerr-web.service: media-server-jellyseerr-web
       traefik.http.routers.media-server-jellyseerr-websecure.middlewares: local-network-ipallowlist@file
       traefik.http.routers.media-server-jellyseerr-websecure.entrypoints: websecure
-      traefik.http.routers.media-server-jellyseerr-websecure.rule: Host(`${JELLYSEERR_HOST}`)
+      traefik.http.routers.media-server-jellyseerr-websecure.rule: Host(`jellyseerr.${DOMAIN}`)
       traefik.http.routers.media-server-jellyseerr-websecure.service: media-server-jellyseerr-websecure
       traefik.http.routers.media-server-jellyseerr-websecure.tls.certresolver: dns-cloudflare
       traefik.http.services.media-server-jellyseerr-web.loadbalancer.server.port: 5055
@@ -138,11 +138,11 @@ services:
       traefik.docker.network: dokploy-network
       traefik.http.routers.media-server-prowlarr-web.entrypoints: web
       traefik.http.routers.media-server-prowlarr-web.middlewares: redirect-to-https@file,local-network-ipallowlist@file
-      traefik.http.routers.media-server-prowlarr-web.rule: Host(`${PROWLARR_HOST}`)
+      traefik.http.routers.media-server-prowlarr-web.rule: Host(`prowlarr.${DOMAIN}`)
       traefik.http.routers.media-server-prowlarr-web.service: media-server-prowlarr-web
       traefik.http.routers.media-server-prowlarr-websecure.middlewares: local-network-ipallowlist@file
       traefik.http.routers.media-server-prowlarr-websecure.entrypoints: websecure
-      traefik.http.routers.media-server-prowlarr-websecure.rule: Host(`${PROWLARR_HOST}`)
+      traefik.http.routers.media-server-prowlarr-websecure.rule: Host(`prowlarr.${DOMAIN}`)
       traefik.http.routers.media-server-prowlarr-websecure.service: media-server-prowlarr-websecure
       traefik.http.routers.media-server-prowlarr-websecure.tls.certresolver: dns-cloudflare
       traefik.http.services.media-server-prowlarr-web.loadbalancer.server.port: 9696
@@ -181,7 +181,6 @@ services:
       - media2:/data2/
     depends_on:
       - prowlarr
-      # - jackett
       # - jellyfin
     restart: unless-stopped
     labels:
@@ -189,11 +188,11 @@ services:
       traefik.docker.network: dokploy-network
       traefik.http.routers.media-server-radarr-web.entrypoints: web
       traefik.http.routers.media-server-radarr-web.middlewares: redirect-to-https@file,local-network-ipallowlist@file
-      traefik.http.routers.media-server-radarr-web.rule: Host(`${RADARR_HOST}`)
+      traefik.http.routers.media-server-radarr-web.rule: Host(`radarr.${DOMAIN}`)
       traefik.http.routers.media-server-radarr-web.service: media-server-radarr-web
       traefik.http.routers.media-server-radarr-websecure.middlewares: local-network-ipallowlist@file
       traefik.http.routers.media-server-radarr-websecure.entrypoints: websecure
-      traefik.http.routers.media-server-radarr-websecure.rule: Host(`${RADARR_HOST}`)
+      traefik.http.routers.media-server-radarr-websecure.rule: Host(`radarr.${DOMAIN}`)
       traefik.http.routers.media-server-radarr-websecure.service: media-server-radarr-websecure
       traefik.http.routers.media-server-radarr-websecure.tls.certresolver: dns-cloudflare
       traefik.http.services.media-server-radarr-web.loadbalancer.server.port: 7878
@@ -219,7 +218,6 @@ services:
       - media2:/data2/
     depends_on:
       - prowlarr
-      # - jackett
       # - jellyfin
     restart: unless-stopped
     labels:
@@ -227,11 +225,11 @@ services:
       traefik.docker.network: dokploy-network
       traefik.http.routers.media-server-sonarr-web.entrypoints: web
       traefik.http.routers.media-server-sonarr-web.middlewares: redirect-to-https@file,local-network-ipallowlist@file
-      traefik.http.routers.media-server-sonarr-web.rule: Host(`${SONARR_HOST}`)
+      traefik.http.routers.media-server-sonarr-web.rule: Host(`sonarr.${DOMAIN}`)
       traefik.http.routers.media-server-sonarr-web.service: media-server-sonarr-web
       traefik.http.routers.media-server-sonarr-websecure.middlewares: local-network-ipallowlist@file
       traefik.http.routers.media-server-sonarr-websecure.entrypoints: websecure
-      traefik.http.routers.media-server-sonarr-websecure.rule: Host(`${SONARR_HOST}`)
+      traefik.http.routers.media-server-sonarr-websecure.rule: Host(`sonarr.${DOMAIN}`)
       traefik.http.routers.media-server-sonarr-websecure.service: media-server-sonarr-websecure
       traefik.http.routers.media-server-sonarr-websecure.tls.certresolver: dns-cloudflare
       traefik.http.services.media-server-sonarr-web.loadbalancer.server.port: 8989
@@ -260,11 +258,11 @@ services:
       traefik.docker.network: dokploy-network
       traefik.http.routers.media-server-shoko-web.entrypoints: web
       traefik.http.routers.media-server-shoko-web.middlewares: redirect-to-https@file,local-network-ipallowlist@file
-      traefik.http.routers.media-server-shoko-web.rule: Host(`${SHOKO_HOST}`)
+      traefik.http.routers.media-server-shoko-web.rule: Host(`shoko.${DOMAIN}`)
       traefik.http.routers.media-server-shoko-web.service: media-server-shoko-web
       traefik.http.routers.media-server-shoko-websecure.middlewares: local-network-ipallowlist@file
       traefik.http.routers.media-server-shoko-websecure.entrypoints: websecure
-      traefik.http.routers.media-server-shoko-websecure.rule: Host(`${SHOKO_HOST}`)
+      traefik.http.routers.media-server-shoko-websecure.rule: Host(`shoko.${DOMAIN}`)
       traefik.http.routers.media-server-shoko-websecure.service: media-server-shoko-websecure
       traefik.http.routers.media-server-shoko-websecure.tls.certresolver: dns-cloudflare
       traefik.http.services.media-server-shoko-web.loadbalancer.server.port: 8111
@@ -296,11 +294,11 @@ services:
       traefik.docker.network: dokploy-network
       traefik.http.routers.media-server-homarr-web.entrypoints: web
       traefik.http.routers.media-server-homarr-web.middlewares: redirect-to-https@file,local-network-ipallowlist@file
-      traefik.http.routers.media-server-homarr-web.rule: Host(`${HOMARR_HOST}`)
+      traefik.http.routers.media-server-homarr-web.rule: Host(`homarr.${DOMAIN}`)
       traefik.http.routers.media-server-homarr-web.service: media-server-homarr-web
       traefik.http.routers.media-server-homarr-websecure.middlewares: local-network-ipallowlist@file
       traefik.http.routers.media-server-homarr-websecure.entrypoints: websecure
-      traefik.http.routers.media-server-homarr-websecure.rule: Host(`${HOMARR_HOST}`)
+      traefik.http.routers.media-server-homarr-websecure.rule: Host(`homarr.${DOMAIN}`)
       traefik.http.routers.media-server-homarr-websecure.service: media-server-homarr-websecure
       traefik.http.routers.media-server-homarr-websecure.tls.certresolver: dns-cloudflare
       traefik.http.services.media-server-homarr-web.loadbalancer.server.port: 7575
