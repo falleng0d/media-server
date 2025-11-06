@@ -147,6 +147,36 @@ services:
       traefik.http.routers.media-server-prowlarr-websecure.tls.certresolver: dns-cloudflare
       traefik.http.services.media-server-prowlarr-web.loadbalancer.server.port: 9696
       traefik.http.services.media-server-prowlarr-websecure.loadbalancer.server.port: 9696
+  jackett:
+    image: lscr.io/linuxserver/jackett:latest
+    pull_policy: always
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - UMASK=${UMASK}
+      - TZ=${TZ}
+      - AUTO_UPDATE=true
+      - RUN_OPTS=
+    networks:
+      - mediarr
+      - dokploy-network
+    volumes:
+      - ${CONFIG_DIR}/jackett:/config
+    restart: unless-stopped
+    labels:
+      traefik.enable: true
+      traefik.docker.network: dokploy-networks
+      traefik.http.routers.media-server-jackett-web.entrypoints: web
+      traefik.http.routers.media-server-jackett-web.middlewares: redirect-to-https@file,local-network-ipallowlist@file
+      traefik.http.routers.media-server-jackett-web.rule: Host(`jackett.${DOMAIN}`)
+      traefik.http.routers.media-server-jackett-web.service: media-server-jackett-web
+      traefik.http.routers.media-server-jackett-websecure.middlewares: local-network-ipallowlist@file
+      traefik.http.routers.media-server-jackett-websecure.entrypoints: websecure
+      traefik.http.routers.media-server-jackett-websecure.rule: Host(`jackett.${DOMAIN}`)
+      traefik.http.routers.media-server-jackett-websecure.service: media-server-jackett-websecure
+      traefik.http.routers.media-server-jackett-websecure.tls.certresolver: dns-cloudflare
+      traefik.http.services.media-server-jackett-web.loadbalancer.server.port: 9117
+      traefik.http.services.media-server-jackett-websecure.loadbalancer.server.port: 9117
   flaresolverr:
     image: ghcr.io/flaresolverr/flaresolverr:latest
     pull_policy: always
