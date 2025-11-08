@@ -1,0 +1,41 @@
+networks:
+  dokploy-network:
+    name: dokploy-network
+    external: true
+
+services:
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    pull_policy: always
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - UMASK=${UMASK}
+      - TZ=${TZ}
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
+      - N8N_HOST=n8n.${DOMAIN}
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=https
+      - N8N_RUNNERS_ENABLED=true
+      - NODE_ENV=production
+      - WEBHOOK_URL=https://n8n.${DOMAIN}/
+      - GENERIC_TIMEZONE=${TZ}
+    networks:
+      - dokploy-network
+    volumes:
+      - ${CONFIG_DIR}/n8n:/home/node/.n8n
+    restart: unless-stopped
+    labels:
+      traefik.enable: true
+      traefik.docker.network: dokploy-network
+      traefik.http.routers.media-server-n8n-web.entrypoints: web
+      traefik.http.routers.media-server-n8n-web.middlewares: redirect-to-https@file,local-network-ipallowlist@file
+      traefik.http.routers.media-server-n8n-web.rule: Host(`n8n.${DOMAIN}`)
+      traefik.http.routers.media-server-n8n-web.service: media-server-n8n-web
+      traefik.http.routers.media-server-n8n-websecure.middlewares: local-network-ipallowlist@file
+      traefik.http.routers.media-server-n8n-websecure.entrypoints: websecure
+      traefik.http.routers.media-server-n8n-websecure.rule: Host(`n8n.${DOMAIN}`)
+      traefik.http.routers.media-server-n8n-websecure.service: media-server-n8n-websecure
+      traefik.http.routers.media-server-n8n-websecure.tls.certresolver: dns-cloudflare
+      traefik.http.services.media-server-n8n-web.loadbalancer.server.port: 5678
+      traefik.http.services.media-server-n8n-websecure.loadbalancer.server.port: 5678
