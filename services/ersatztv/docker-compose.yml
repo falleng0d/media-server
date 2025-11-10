@@ -1,0 +1,37 @@
+networks:
+  dokploy-network:
+    name: dokploy-network
+    external: true
+
+services:
+  ersatztv:
+    image: ghcr.io/ersatztv/ersatztv:latest
+    pull_policy: always
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - UMASK=${UMASK}
+      - TZ=${TZ}
+    networks:
+      - dokploy-network
+    volumes:
+      - ${CONFIG_DIR}/ersatztv:/config
+      - /mnt/media:/mnt/media:ro
+      - /mnt/media2:/mnt/media2:ro
+    tmpfs:
+      - /transcode
+    restart: unless-stopped
+    labels:
+      traefik.enable: true
+      traefik.docker.network: dokploy-network
+      traefik.http.routers.media-server-ersatztv-web.entrypoints: web
+      traefik.http.routers.media-server-ersatztv-web.middlewares: redirect-to-https@file,local-network-ipallowlist@file
+      traefik.http.routers.media-server-ersatztv-web.rule: Host(`ersatztv.${DOMAIN}`)
+      traefik.http.routers.media-server-ersatztv-web.service: media-server-ersatztv-web
+      traefik.http.routers.media-server-ersatztv-websecure.middlewares: local-network-ipallowlist@file
+      traefik.http.routers.media-server-ersatztv-websecure.entrypoints: websecure
+      traefik.http.routers.media-server-ersatztv-websecure.rule: Host(`ersatztv.${DOMAIN}`)
+      traefik.http.routers.media-server-ersatztv-websecure.service: media-server-ersatztv-websecure
+      traefik.http.routers.media-server-ersatztv-websecure.tls.certresolver: dns-cloudflare
+      traefik.http.services.media-server-ersatztv-web.loadbalancer.server.port: 8409
+      traefik.http.services.media-server-ersatztv-websecure.loadbalancer.server.port: 8409
