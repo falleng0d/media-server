@@ -8,9 +8,8 @@ volumes:
 
 services:
   chatmock:
-    build: .
     image: chatmock:latest
-    container_name: chatmock
+    pull_policy: if_not_present
     command: ["serve"]
     environment:
       - CHATGPT_LOCAL_HOME=/data
@@ -55,7 +54,7 @@ services:
 
   chatmock-login:
     image: chatmock:latest
-    pull_policy: always
+    pull_policy: if_not_present
     profiles: ["login"]
     command: ["login"]
     environment:
