@@ -14,15 +14,14 @@ services:
     command: ["serve"]
     environment:
       - CHATGPT_LOCAL_HOME=/data
-      - PORT=${PORT:8000} # Container listening port (default 8000)
       - VERBOSE=${VERBOSE} # true|false to enable request/stream logs
-      - CHATGPT_LOCAL_REASONING_EFFORT=${CHATGPT_LOCAL_REASONING_EFFORT:medium} # minimal|low|medium|high
-      - CHATGPT_LOCAL_REASONING_SUMMARY=${CHATGPT_LOCAL_REASONING_SUMMARY:auto} # auto|concise|detailed|none
+      - CHATGPT_LOCAL_REASONING_EFFORT=${CHATGPT_LOCAL_REASONING_EFFORT:-medium} # minimal|low|medium|high
+      - CHATGPT_LOCAL_REASONING_SUMMARY=${CHATGPT_LOCAL_REASONING_SUMMARY:-auto} # auto|concise|detailed|none
       - CHATGPT_LOCAL_REASONING_COMPAT=${CHATGPT_LOCAL_REASONING_COMPAT} # legacy|o3|think-tags|current
       - CHATGPT_LOCAL_DEBUG_MODEL=${CHATGPT_LOCAL_DEBUG_MODEL} # force model override (e.g., gpt-5)
       - CHATGPT_LOCAL_CLIENT_ID=${CHATGPT_LOCAL_CLIENT_ID} # OAuth client id override (rarely needed)
-      - CHATGPT_LOCAL_EXPOSE_REASONING_MODELS=${CHATGPT_LOCAL_EXPOSE_REASONING_MODELS:false} # true|false to add reasoning model variants to /v1/models
-      - CHATGPT_LOCAL_ENABLE_WEB_SEARCH=${CHATGPT_LOCAL_ENABLE_WEB_SEARCH:true} # true|false to enable default web search tool
+      - CHATGPT_LOCAL_EXPOSE_REASONING_MODELS=${CHATGPT_LOCAL_EXPOSE_REASONING_MODELS:-false} # true|false to add reasoning model variants to /v1/models
+      - CHATGPT_LOCAL_ENABLE_WEB_SEARCH=${CHATGPT_LOCAL_ENABLE_WEB_SEARCH:-true} # true|false to enable default web search tool
       - PUID=${PUID}
       - PGID=${PGID}
       - UMASK=${UMASK}
