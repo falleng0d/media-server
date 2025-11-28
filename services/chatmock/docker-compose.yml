@@ -14,7 +14,7 @@ services:
     command: ["serve"]
     environment:
       - CHATGPT_LOCAL_HOME=/data
-      - PORT=${PORT} # Container listening port (default 8000)
+      - PORT=${PORT:8000} # Container listening port (default 8000)
       - VERBOSE=${VERBOSE} # true|false to enable request/stream logs
       - CHATGPT_LOCAL_REASONING_EFFORT=${CHATGPT_LOCAL_REASONING_EFFORT:medium} # minimal|low|medium|high
       - CHATGPT_LOCAL_REASONING_SUMMARY=${CHATGPT_LOCAL_REASONING_SUMMARY:auto} # auto|concise|detailed|none
@@ -27,8 +27,6 @@ services:
       - PGID=${PGID}
       - UMASK=${UMASK}
       - TZ=${TZ}
-    ports:
-      - "8000:8000"
     networks:
       - dokploy-network
     volumes:
@@ -72,6 +70,4 @@ services:
       - dokploy-network
     volumes:
       - chatmock_data:/data
-    ports:
-      - "1455:1455"
     restart: unless-stopped
