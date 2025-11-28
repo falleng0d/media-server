@@ -1,0 +1,33 @@
+networks:
+  dokploy-network:
+    name: dokploy-network
+    external: true
+
+services:
+  portkey:
+    image: portkeyai/gateway:latest
+    pull_policy: always
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - UMASK=${UMASK}
+      - TZ=${TZ}
+    networks:
+      - dokploy-network
+    volumes:
+      - ${CONFIG_DIR}/portkey/conf.json:/app/conf.json
+    restart: unless-stopped
+    labels:
+      traefik.enable: true
+      traefik.docker.network: dokploy-network
+      traefik.http.routers.ai-portkey-web.entrypoints: web
+      traefik.http.routers.ai-portkey-web.middlewares: redirect-to-https@file,local-network-ipallowlist@file
+      traefik.http.routers.ai-portkey-web.rule: Host(`portkey.${DOMAIN}`)
+      traefik.http.routers.ai-portkey-web.service: ai-portkey-web
+      traefik.http.routers.ai-portkey-websecure.middlewares: local-network-ipallowlist@file
+      traefik.http.routers.ai-portkey-websecure.entrypoints: websecure
+      traefik.http.routers.ai-portkey-websecure.rule: Host(`portkey.${DOMAIN}`)
+      traefik.http.routers.ai-portkey-websecure.service: ai-portkey-websecure
+      traefik.http.routers.ai-portkey-websecure.tls.certresolver: dns-cloudflare
+      traefik.http.services.ai-portkey-web.loadbalancer.server.port: 8787
+      traefik.http.services.ai-portkey-websecure.loadbalancer.server.port: 8787
