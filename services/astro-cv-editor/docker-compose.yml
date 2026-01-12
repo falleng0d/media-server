@@ -1,0 +1,46 @@
+networks:
+  dokploy-network:
+    name: dokploy-network
+    external: true
+  astro-cv-internal:
+    driver: bridge
+
+services:
+  preview:
+    image: ghcr.io/falleng0d/astro-cv-editor/preview:latest
+    container_name: astro-cv-editor-preview
+    env_file: .env
+    environment:
+      - BASE_PATH=
+      - PORT=3000
+    networks:
+      - dokploy-network
+      - astro-cv-internal
+    restart: unless-stopped
+    depends_on:
+      - server
+    labels:
+      traefik.enable: true
+      traefik.docker.network: dokploy-network
+      traefik.http.routers.astro-cv-editor-web.entrypoints: web
+      traefik.http.routers.astro-cv-editor-web.middlewares: redirect-to-https@file,local-network-ipallowlist@file
+      traefik.http.routers.astro-cv-editor-web.rule: Host(`cv.${DOMAIN}`)
+      traefik.http.routers.astro-cv-editor-web.service: astro-cv-editor-web
+      traefik.http.routers.astro-cv-editor-websecure.middlewares: local-network-ipallowlist@file
+      traefik.http.routers.astro-cv-editor-websecure.entrypoints: websecure
+      traefik.http.routers.astro-cv-editor-websecure.rule: Host(`cv.${DOMAIN}`)
+      traefik.http.routers.astro-cv-editor-websecure.service: astro-cv-editor-websecure
+      traefik.http.routers.astro-cv-editor-websecure.tls.certresolver: dns-cloudflare
+      traefik.http.services.astro-cv-editor-web.loadbalancer.server.port: 3000
+      traefik.http.services.astro-cv-editor-websecure.loadbalancer.server.port: 3000
+
+  server:
+    image: ghcr.io/falleng0d/astro-cv-editor/server:latest
+    container_name: astro-cv-editor-server
+    env_file: .env
+    environment:
+      - BASE_PATH=
+      - PORT=3001
+    networks:
+      - astro-cv-internal
+    restart: unless-stopped
