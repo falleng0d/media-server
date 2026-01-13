@@ -8,6 +8,7 @@ networks:
 services:
   preview:
     image: ghcr.io/falleng0d/astro-cv-editor/preview:latest
+    pull_policy: always
     container_name: astro-cv-editor-preview
     env_file: .env
     environment:
@@ -43,6 +44,7 @@ services:
 
   editor:
     image: ghcr.io/falleng0d/astro-cv-editor/editor:latest
+    pull_policy: always
     container_name: astro-cv-editor-editor
     env_file: .env
     environment:
@@ -72,6 +74,7 @@ services:
 
   server:
     image: ghcr.io/falleng0d/astro-cv-editor/server:latest
+    pull_policy: always
     container_name: astro-cv-editor-server
     env_file: .env
     environment:
