@@ -9,7 +9,7 @@ volumes:
 services:
   chatmock:
     image: chatmock:latest
-    pull_policy: if_not_present
+    pull_policy: always
     command: ["serve"]
     environment:
       - CHATGPT_LOCAL_HOME=/data
