@@ -21,6 +21,12 @@ volumes:
       type: none
       o: bind
       device: ${MEDIA_DRIVE_2}
+  media3:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${MEDIA_DRIVE_3}
 
 services:
   # jellyfin:
@@ -65,6 +71,7 @@ services:
       - ${CONFIG_DIR}/bazarr:/config
       - media:/data/
       - media2:/data2/
+      - media3:/data3/
     depends_on:
       - sonarr
       - radarr
@@ -102,6 +109,7 @@ services:
       - ${CONFIG_DIR}/jellyseerr:/app/config
       - media:/data/
       - media2:/data2/
+      - media3:/data3/
     depends_on:
       - sonarr
       - radarr
@@ -209,6 +217,7 @@ services:
       - ${CONFIG_DIR}/radarr:/config
       - media:/data/
       - media2:/data2/
+      - media3:/data3/
     depends_on:
       - prowlarr
       # - jellyfin
@@ -246,6 +255,7 @@ services:
       - ${CONFIG_DIR}/sonarr:/config
       - media:/data/
       - media2:/data2/
+      - media3:/data3/
     depends_on:
       - prowlarr
       # - jellyfin
@@ -282,6 +292,7 @@ services:
       - ${CONFIG_DIR}/shoko:/home/shoko/.shoko
       - media:/mnt/media
       - media2:/mnt/media2
+      - media3:/mnt/media3
     restart: unless-stopped
     labels:
       traefik.enable: true

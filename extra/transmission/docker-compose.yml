@@ -11,13 +11,19 @@ volumes:
       type: none
       o: bind
       device: ${MEDIA_DRIVE_2}
+  media3:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${MEDIA_DRIVE_3}
 
 networks:
   transmission:
     name: transmission
     driver: bridge
     attachable: true
-    
+
 services:
   transmission:
     image: haugene/transmission-openvpn
@@ -29,6 +35,7 @@ services:
     volumes:
       - media:/data/
       - media2:/data2/
+      - media3:/data3/
       - /docker/transmission/openvpn/:/etc/openvpn/custom/
       - /docker/transmission/config/:/config/
     environment:
