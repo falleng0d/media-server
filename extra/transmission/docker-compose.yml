@@ -43,6 +43,9 @@ services:
       - OPENVPN_CONFIG=de-ber-udp
       - LOCAL_NETWORK=192.168.1.0/24
       - TRANSMISSION_WEB_UI=flood-for-transmission
+      - TRANSMISSION_DOWNLOAD_DIR=/data3/completed
+      - TRANSMISSION_INCOMPLETE_DI=/data3/incomplete
+      - TRANSMISSION_WATCH_DIR=/data3/watch
     ports:
       - 9091:9091
     restart: unless-stopped
