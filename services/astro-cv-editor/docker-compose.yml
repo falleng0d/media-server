@@ -5,6 +5,9 @@ networks:
   astro-cv-internal:
     driver: bridge
 
+volumes:
+  astro-cv-server-data:
+
 services:
   preview:
     image: ghcr.io/falleng0d/astro-cv-editor/preview:latest
@@ -78,9 +81,12 @@ services:
     container_name: astro-cv-editor-server
     env_file: .env
     environment:
-      - BASE_PATH=
+      - BASE_PATH=${BASE_PATH:-/api}
       - PREVIEW_URL=http://preview:3000
       - PORT=3001
+      - DATABASE_URL=file:/data/db.sqlite
+    volumes:
+      - astro-cv-server-data:/data
     networks:
       - dokploy-network
       - astro-cv-internal
