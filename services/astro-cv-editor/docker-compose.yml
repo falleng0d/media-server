@@ -88,6 +88,7 @@ services:
       - PORTKEY_API_KEY=${PORTKEY_API_KEY}
       - TAVILY_API_KEY=${TAVILY_API_KEY}
       - PORTKEY_MODEL=${PORTKEY_MODEL}
+      - MARKITDOWN_API_URL=http://markitdown:8000
     volumes:
       - astro-cv-server-data:/data
     networks:
@@ -108,3 +109,15 @@ services:
       traefik.http.routers.astro-cv-editor-server-websecure.tls.certresolver: dns-cloudflare
       traefik.http.services.astro-cv-editor-server-web.loadbalancer.server.port: 3001
       traefik.http.services.astro-cv-editor-server-websecure.loadbalancer.server.port: 3001
+
+  markitdown:
+    image: ghcr.io/falleng0d/markitdown-fastapi:latest
+    container_name: astro-cv-editor-markitdown
+    env_file: .env
+    environment:
+      - OPENAI_BASE_URL=${MARKITDOWN_OPENAI_BASE_URL}
+      - OPENAI_API_KEY=${MARKITDOWN_OPENAI_API_KEY}
+      - DEFAULT_MODEL=${MARKITDOWN_DEFAULT_MODEL}
+    networks:
+      - astro-cv-internal
+    restart: unless-stopped
