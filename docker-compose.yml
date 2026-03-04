@@ -165,6 +165,7 @@ services:
       - TZ=${TZ}
       - AUTO_UPDATE=true
       - RUN_OPTS=
+      - DOTNET_USE_POLLING_FILE_WATCHER=1
     networks:
       - mediarr
       - dokploy-network
