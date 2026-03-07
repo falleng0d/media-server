@@ -1,0 +1,137 @@
+networks:
+  dokploy-network:
+    name: dokploy-network
+    external: true
+  rft-internal:
+    driver: bridge
+
+volumes:
+  backend_postgres_data_prod:
+  frontend_postgres_data_prod:
+
+services:
+  # ─── Backend ──────────────────────────────────────────────────────────────
+
+  backend:
+    image: falleng0d/reallyfuntranslations-backend:latest
+    pull_policy: always
+    container_name: rft-backend
+    env_file:
+      - .env
+    environment:
+      POSTGRES_SERVER: backend-db
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB: "${BACKEND_POSTGRES_DB}"
+      POSTGRES_USER: "${BACKEND_POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${BACKEND_POSTGRES_PASSWORD}"
+      SECRET_KEY: "${SECRET_KEY}"
+      ACCESS_TOKEN_EXPIRE_MINUTES: "${ACCESS_TOKEN_EXPIRE_MINUTES}"
+      ALLOW_ORIGINS: "${ALLOW_ORIGINS}"
+      OPENAI_API_BASE_URL: "${OPENAI_API_BASE_URL}"
+      OPENAI_API_KEY: "${OPENAI_API_KEY}"
+      OPENAI_MODEL: "${OPENAI_MODEL}"
+      RUNTIME_ENV: "prod"
+    depends_on:
+      backend-db:
+        condition: service_healthy
+    networks:
+      - dokploy-network
+      - rft-internal
+    restart: unless-stopped
+    labels:
+      traefik.enable: true
+      traefik.docker.network: dokploy-network
+      traefik.http.routers.rft-backend-web.entrypoints: web
+      traefik.http.routers.rft-backend-web.middlewares: redirect-to-https@file
+      traefik.http.routers.rft-backend-web.rule: Host(`${DOMAIN}`) && (PathPrefix(`/api`) || PathPrefix(`/health`))
+      traefik.http.routers.rft-backend-web.service: rft-backend-web
+      traefik.http.routers.rft-backend-web.priority: 10
+      traefik.http.routers.rft-backend-websecure.entrypoints: websecure
+      traefik.http.routers.rft-backend-websecure.rule: Host(`${DOMAIN}`) && (PathPrefix(`/api`) || PathPrefix(`/health`))
+      traefik.http.routers.rft-backend-websecure.service: rft-backend-websecure
+      traefik.http.routers.rft-backend-websecure.tls.certresolver: dns-cloudflare
+      traefik.http.routers.rft-backend-websecure.priority: 10
+      # Rate-limited translate router
+      traefik.http.middlewares.rft-translate-ratelimit.ratelimit.average: 10
+      traefik.http.middlewares.rft-translate-ratelimit.ratelimit.period: 1m
+      traefik.http.middlewares.rft-translate-ratelimit.ratelimit.burst: 15
+      traefik.http.routers.rft-backend-translate-websecure.entrypoints: websecure
+      traefik.http.routers.rft-backend-translate-websecure.rule: Host(`${DOMAIN}`) && PathPrefix(`/api/v1/translate/`)
+      traefik.http.routers.rft-backend-translate-websecure.middlewares: rft-translate-ratelimit
+      traefik.http.routers.rft-backend-translate-websecure.service: rft-backend-websecure
+      traefik.http.routers.rft-backend-translate-websecure.tls.certresolver: dns-cloudflare
+      traefik.http.routers.rft-backend-translate-websecure.priority: 20
+      traefik.http.services.rft-backend-web.loadbalancer.server.port: 8000
+      traefik.http.services.rft-backend-websecure.loadbalancer.server.port: 8000
+
+  backend-db:
+    image: postgres:15-alpine
+    container_name: rft-backend-db
+    environment:
+      POSTGRES_DB: "${BACKEND_POSTGRES_DB}"
+      POSTGRES_USER: "${BACKEND_POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${BACKEND_POSTGRES_PASSWORD}"
+    volumes:
+      - backend_postgres_data_prod:/var/lib/postgresql/data
+    networks:
+      - rft-internal
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${BACKEND_POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── Frontend ─────────────────────────────────────────────────────────────
+
+  frontend:
+    image: falleng0d/reallyfuntranslations-frontend:latest
+    pull_policy: always
+    container_name: rft-frontend
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: "postgresql://${FRONTEND_POSTGRES_USER}:${FRONTEND_POSTGRES_PASSWORD}@frontend-db:5432/${FRONTEND_POSTGRES_DB}"
+      VITE_API_BASE_URL: "${VITE_API_BASE_URL}"
+      API_BASE_URL: "http://backend:8000"
+    depends_on:
+      frontend-db:
+        condition: service_healthy
+    networks:
+      - dokploy-network
+      - rft-internal
+    restart: unless-stopped
+    labels:
+      traefik.enable: true
+      traefik.docker.network: dokploy-network
+      traefik.http.routers.rft-frontend-web.entrypoints: web
+      traefik.http.routers.rft-frontend-web.middlewares: redirect-to-https@file
+      traefik.http.routers.rft-frontend-web.rule: Host(`${DOMAIN}`)
+      traefik.http.routers.rft-frontend-web.service: rft-frontend-web
+      traefik.http.routers.rft-frontend-web.priority: 1
+      traefik.http.routers.rft-frontend-websecure.entrypoints: websecure
+      traefik.http.routers.rft-frontend-websecure.rule: Host(`${DOMAIN}`)
+      traefik.http.routers.rft-frontend-websecure.service: rft-frontend-websecure
+      traefik.http.routers.rft-frontend-websecure.tls.certresolver: dns-cloudflare
+      traefik.http.routers.rft-frontend-websecure.priority: 1
+      traefik.http.services.rft-frontend-web.loadbalancer.server.port: 3000
+      traefik.http.services.rft-frontend-websecure.loadbalancer.server.port: 3000
+
+  frontend-db:
+    image: postgres:15-alpine
+    container_name: rft-frontend-db
+    environment:
+      POSTGRES_DB: "${FRONTEND_POSTGRES_DB}"
+      POSTGRES_USER: "${FRONTEND_POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${FRONTEND_POSTGRES_PASSWORD}"
+    volumes:
+      - frontend_postgres_data_prod:/var/lib/postgresql/data
+    networks:
+      - rft-internal
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${FRONTEND_POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
