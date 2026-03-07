@@ -309,3 +309,5 @@ cython_debug/
 roles/**/vars/main.yml
 
 terraform/
+/*.md
+!README.md
