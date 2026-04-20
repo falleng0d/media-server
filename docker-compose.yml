@@ -309,39 +309,39 @@ services:
       traefik.http.routers.media-server-shoko-websecure.tls.certresolver: dns-cloudflare
       traefik.http.services.media-server-shoko-web.loadbalancer.server.port: 8111
       traefik.http.services.media-server-shoko-websecure.loadbalancer.server.port: 8111
-  homarr:
-    container_name: homarr
-    image: ghcr.io/homarr-labs/homarr:latest
-    pull_policy: always
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - UMASK=${UMASK}
-      - TZ=${TZ}
-      - SECRET_ENCRYPTION_KEY=${SECRET_ENCRYPTION_KEY}
-    # ports:
-    #   - 7575:7575
-    networks:
-      - mediarr
-      - transmission
-      - dokploy-network
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ${CONFIG_DIR}/homarr/appdata:/appdata
-    restart: unless-stopped
-    labels:
-      traefik.enable: true
-      traefik.docker.network: dokploy-network
-      traefik.http.routers.media-server-homarr-web.entrypoints: web
-      traefik.http.routers.media-server-homarr-web.middlewares: redirect-to-https@file,local-network-ipallowlist@file
-      traefik.http.routers.media-server-homarr-web.rule: Host(`homarr.${DOMAIN}`)
-      traefik.http.routers.media-server-homarr-web.service: media-server-homarr-web
-      traefik.http.routers.media-server-homarr-websecure.middlewares: local-network-ipallowlist@file
-      traefik.http.routers.media-server-homarr-websecure.entrypoints: websecure
-      traefik.http.routers.media-server-homarr-websecure.rule: Host(`homarr.${DOMAIN}`)
-      traefik.http.routers.media-server-homarr-websecure.service: media-server-homarr-websecure
-      traefik.http.routers.media-server-homarr-websecure.tls.certresolver: dns-cloudflare
-      traefik.http.services.media-server-homarr-web.loadbalancer.server.port: 7575
-      traefik.http.services.media-server-homarr-websecure.loadbalancer.server.port: 7575
+  # homarr:
+  #   container_name: homarr
+  #   image: ghcr.io/homarr-labs/homarr:latest
+  #   pull_policy: always
+  #   environment:
+  #     - PUID=${PUID}
+  #     - PGID=${PGID}
+  #     - UMASK=${UMASK}
+  #     - TZ=${TZ}
+  #     - SECRET_ENCRYPTION_KEY=${SECRET_ENCRYPTION_KEY}
+  #   # ports:
+  #   #   - 7575:7575
+  #   networks:
+  #     - mediarr
+  #     - transmission
+  #     - dokploy-network
+  #   extra_hosts:
+  #     - "host.docker.internal:host-gateway"
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #     - ${CONFIG_DIR}/homarr/appdata:/appdata
+  #   restart: unless-stopped
+  #   labels:
+  #     traefik.enable: true
+  #     traefik.docker.network: dokploy-network
+  #     traefik.http.routers.media-server-homarr-web.entrypoints: web
+  #     traefik.http.routers.media-server-homarr-web.middlewares: redirect-to-https@file,local-network-ipallowlist@file
+  #     traefik.http.routers.media-server-homarr-web.rule: Host(`homarr.${DOMAIN}`)
+  #     traefik.http.routers.media-server-homarr-web.service: media-server-homarr-web
+  #     traefik.http.routers.media-server-homarr-websecure.middlewares: local-network-ipallowlist@file
+  #     traefik.http.routers.media-server-homarr-websecure.entrypoints: websecure
+  #     traefik.http.routers.media-server-homarr-websecure.rule: Host(`homarr.${DOMAIN}`)
+  #     traefik.http.routers.media-server-homarr-websecure.service: media-server-homarr-websecure
+  #     traefik.http.routers.media-server-homarr-websecure.tls.certresolver: dns-cloudflare
+  #     traefik.http.services.media-server-homarr-web.loadbalancer.server.port: 7575
+  #     traefik.http.services.media-server-homarr-websecure.loadbalancer.server.port: 7575
