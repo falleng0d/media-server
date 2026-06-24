@@ -1,0 +1,76 @@
+networks:
+  dokploy-network:
+    name: dokploy-network
+    external: true
+  hindsight-internal:
+    driver: bridge
+
+volumes:
+  hindsight-postgres-data:
+
+services:
+  hindsight-db:
+    image: pgvector/pgvector:pg16
+    pull_policy: always
+    environment:
+      POSTGRES_USER: ${HINDSIGHT_DB_USER:-hindsight_user}
+      POSTGRES_PASSWORD: ${HINDSIGHT_DB_PASSWORD:?set HINDSIGHT_DB_PASSWORD}
+      POSTGRES_DB: ${HINDSIGHT_DB_NAME:-hindsight_db}
+    volumes:
+      - hindsight-postgres-data:/var/lib/postgresql/data
+    networks:
+      - hindsight-internal
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${HINDSIGHT_DB_USER:-hindsight_user} -d ${HINDSIGHT_DB_NAME:-hindsight_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  hindsight:
+    image: ghcr.io/vectorize-io/hindsight:${HINDSIGHT_VERSION:-latest}
+    pull_policy: always
+    depends_on:
+      hindsight-db:
+        condition: service_healthy
+    environment:
+      HINDSIGHT_API_DATABASE_URL: "postgresql://${HINDSIGHT_DB_USER:-hindsight_user}:${HINDSIGHT_DB_PASSWORD:?set HINDSIGHT_DB_PASSWORD}@hindsight-db:5432/${HINDSIGHT_DB_NAME:-hindsight_db}"
+      HINDSIGHT_API_RUN_MIGRATIONS_ON_STARTUP: "true"
+      HINDSIGHT_API_WORKER_ID: ${HINDSIGHT_API_WORKER_ID:-dark-nas-hindsight}
+      HINDSIGHT_API_LLM_PROVIDER: ${HINDSIGHT_API_LLM_PROVIDER:-openai}
+      HINDSIGHT_API_LLM_MODEL: ${HINDSIGHT_API_LLM_MODEL:-gpt-4o-mini}
+      HINDSIGHT_API_LLM_API_KEY: ${HINDSIGHT_API_LLM_API_KEY:?set HINDSIGHT_API_LLM_API_KEY}
+      HINDSIGHT_API_TENANT_EXTENSION: hindsight_api.extensions.builtin.tenant:ApiKeyTenantExtension
+      HINDSIGHT_API_TENANT_API_KEY: ${HINDSIGHT_API_TENANT_API_KEY:?set HINDSIGHT_API_TENANT_API_KEY}
+      HINDSIGHT_CP_ACCESS_KEY: ${HINDSIGHT_CP_ACCESS_KEY:?set HINDSIGHT_CP_ACCESS_KEY}
+      HINDSIGHT_CP_DATAPLANE_API_URL: http://127.0.0.1:8888
+      HINDSIGHT_CP_DATAPLANE_API_KEY: ${HINDSIGHT_API_TENANT_API_KEY:?set HINDSIGHT_API_TENANT_API_KEY}
+    networks:
+      - hindsight-internal
+      - dokploy-network
+    restart: unless-stopped
+    labels:
+      traefik.enable: true
+      traefik.docker.network: dokploy-network
+      traefik.http.routers.ai-hindsight-web.entrypoints: web
+      traefik.http.routers.ai-hindsight-web.middlewares: redirect-to-https@file,local-network-ipallowlist@file
+      traefik.http.routers.ai-hindsight-web.rule: Host(`hindsight.${DOMAIN}`)
+      traefik.http.routers.ai-hindsight-web.service: ai-hindsight-web
+      traefik.http.routers.ai-hindsight-websecure.middlewares: local-network-ipallowlist@file
+      traefik.http.routers.ai-hindsight-websecure.entrypoints: websecure
+      traefik.http.routers.ai-hindsight-websecure.rule: Host(`hindsight.${DOMAIN}`)
+      traefik.http.routers.ai-hindsight-websecure.service: ai-hindsight-websecure
+      traefik.http.routers.ai-hindsight-websecure.tls.certresolver: dns-cloudflare
+      traefik.http.services.ai-hindsight-web.loadbalancer.server.port: 9999
+      traefik.http.services.ai-hindsight-websecure.loadbalancer.server.port: 9999
+      traefik.http.routers.ai-hindsight-api-web.entrypoints: web
+      traefik.http.routers.ai-hindsight-api-web.middlewares: redirect-to-https@file,local-network-ipallowlist@file
+      traefik.http.routers.ai-hindsight-api-web.rule: Host(`hindsight-api.${DOMAIN}`)
+      traefik.http.routers.ai-hindsight-api-web.service: ai-hindsight-api-web
+      traefik.http.routers.ai-hindsight-api-websecure.middlewares: local-network-ipallowlist@file
+      traefik.http.routers.ai-hindsight-api-websecure.entrypoints: websecure
+      traefik.http.routers.ai-hindsight-api-websecure.rule: Host(`hindsight-api.${DOMAIN}`)
+      traefik.http.routers.ai-hindsight-api-websecure.service: ai-hindsight-api-websecure
+      traefik.http.routers.ai-hindsight-api-websecure.tls.certresolver: dns-cloudflare
+      traefik.http.services.ai-hindsight-api-web.loadbalancer.server.port: 8888
+      traefik.http.services.ai-hindsight-api-websecure.loadbalancer.server.port: 8888
