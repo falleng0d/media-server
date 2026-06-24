@@ -67,11 +67,11 @@ services:
       traefik.http.services.ai-hindsight-websecure.loadbalancer.server.port: 9999
       traefik.http.routers.ai-hindsight-api-web.entrypoints: web
       traefik.http.routers.ai-hindsight-api-web.middlewares: redirect-to-https@file,local-network-ipallowlist@file
-      traefik.http.routers.ai-hindsight-api-web.rule: Host(`hindsight-api.${DOMAIN}`)
+      traefik.http.routers.ai-hindsight-api-web.rule: Host(`api.hindsight.${DOMAIN}`)
       traefik.http.routers.ai-hindsight-api-web.service: ai-hindsight-api-web
       traefik.http.routers.ai-hindsight-api-websecure.middlewares: local-network-ipallowlist@file
       traefik.http.routers.ai-hindsight-api-websecure.entrypoints: websecure
-      traefik.http.routers.ai-hindsight-api-websecure.rule: Host(`hindsight-api.${DOMAIN}`)
+      traefik.http.routers.ai-hindsight-api-websecure.rule: Host(`api.hindsight.${DOMAIN}`)
       traefik.http.routers.ai-hindsight-api-websecure.service: ai-hindsight-api-websecure
       traefik.http.routers.ai-hindsight-api-websecure.tls.certresolver: dns-cloudflare
       traefik.http.services.ai-hindsight-api-web.loadbalancer.server.port: 8888

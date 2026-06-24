@@ -10,7 +10,7 @@ This compose file runs:
 Traefik routes:
 
 - Control Plane UI: `https://hindsight.${DOMAIN}`
-- API: `https://hindsight-api.${DOMAIN}`
+- API: `https://api.hindsight.${DOMAIN}`
 
 Both routes use the existing `local-network-ipallowlist@file` middleware.
 
