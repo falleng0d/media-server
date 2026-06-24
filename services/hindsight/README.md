@@ -29,6 +29,7 @@ Optional environment variables:
 - `HINDSIGHT_DB_NAME` defaults to `hindsight_db`
 - `HINDSIGHT_API_LLM_PROVIDER` defaults to `openai`
 - `HINDSIGHT_API_LLM_MODEL` defaults to `gpt-4o-mini`
+- `HINDSIGHT_API_LLM_BASE_URL` custom OpenAI-compatible endpoint; blank uses the provider default
 - `HINDSIGHT_API_WORKER_ID` defaults to `dark-nas-hindsight`
 
 Security notes:
